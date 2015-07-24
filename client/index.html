@@ -1,0 +1,22 @@
+<template name="applayout">
+	<head>
+	  <title>Exercise Champion</title>
+	  <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1.0, user-scalable=no">
+	</head>
+
+	<body>
+		{{#if alertinfo}}
+      		<div class="alert alert-danger">
+ 			{{alertinfo}}
+    	  </div>
+	    {{/if}}
+		{{#if alertok}}
+      		<div class="alert alert-info">
+ 			{{alertok}}
+    	  </div>
+	    {{/if}}
+
+		{{> menu}}
+	    {{> yield}}
+	</body>
+</template>

@@ -1,0 +1,48 @@
+<template name="profile">
+	<div>
+		<div class="panel panel-success">
+		  <div class="panel-body">
+		  	<div class="col-xs-12 form-group">
+		  		<label>Full name:</label>
+		    	<input class="name col-xs-12" placeholder="Your name" value="{{profile.name}}" />
+			</div>
+		    <div class="col-xs-12 form-group">
+		    	<div>
+		    		<label>Band/group:</label>
+		   			{{> inputAutocomplete settings=acgroup class="col-xs-12 input-xlarge groupname" placeholder="Your band name" value=profile.groupname}}
+		    	</div>
+		    	<div>
+		    		<small>Select from the list or write a new one</small>
+		  		</div>
+		  	</div>
+		  </div>
+		  <div class="panel-footer">
+		    <h3 class="panel-title"><i class="fa fa-user"></i> About you</h3>
+		  </div>
+		</div>
+	</div>
+	{{#if conductor}}
+	<div>
+		<div class="panel panel-success">
+			<div class="panel-body">
+				{{> recommended}}
+			</div>
+			<div class="panel-footer">
+				<h3 class="panel-title"><i class="fa fa-asterisk"></i> Recommended</h3>
+			</div>
+		</div>
+	</div>
+	{{/if}}
+</template>
+
+<template name="groupPill">
+    <span class="label">{{name}}</span>
+</template>
+
+<template name="recommended">
+	<div>
+		<label>New recommended (conductor only)</label><br>
+		<textarea cols="40" rows="4" class="recommended"></textarea><br>
+		<button class="btn btn-large addrecommended">Add</button>
+	</div>
+</template>

@@ -1,0 +1,47 @@
+body {
+	background-color: #3e3e3e;
+	padding: 5px;
+	overflow-x: hidden;
+}
+
+.smalldescription {
+	color: #999999;
+	fonts-size: 0.6em;
+}
+
+.largewhite {
+	color: white;
+	font-size: 2.0em;
+}
+
+.white {
+	color: white;
+}
+
+button.exercise {
+	height: 60px;
+	margin-top: 25px;
+	margin-bottom: 25px;
+	width: 100%;
+}
+
+/* Animations */
+
+@-webkit-keyframes activeanim {
+    0% {color: white;}
+    50% {color: red;}
+    75% {color: red;}
+    100% {color: white;}
+}
+
+@keyframes activeanim {
+    0% {color: white;}
+    50% {color: red;}
+    75% {color: red;}
+    100% {color: white;}
+}
+
+.active {
+    animation: activeanim 2s infinite;
+    -webkit-animation: activeanim 2s infinite;
+}

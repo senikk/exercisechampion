@@ -1,0 +1,51 @@
+<template name="exerciselog">
+	<ul class="nav nav-pills">
+		<li class="{{isActivePath '/log/you'}}"><a href="/log/you">You</a></li>
+		<li class="{{isActivePath '/log/all'}}"><a href="/log/all">Everyone</a></li>
+		<li class="{{isActivePath '/log/now'}}"><a href="/log/now">Now</a></li>
+	</ul>
+	<br>
+	{{#if isActivePath '/log/now'}}
+		{{#if log}}
+			{{#each log}}
+				{{> exerciselogentrynow}}
+			{{/each}}
+		{{else}}
+			<div class="well">No one have started exercising for the last two hours.</div>
+		{{/if}}
+	{{else}}
+		{{#each log}}
+			{{> exerciselogentry}}
+		{{/each}}
+	{{/if}}
+</template>
+
+<template name="exerciselogentrynow">
+	<div class="panel panel-danger">
+	  <div class="panel-heading">
+	  	{{profile.name}} ({{formatTimestampWithTime startdate}})
+	  </div>
+	  <div class="panel-footer align-right">
+	    <h3 class="panel-title">{{ago startdate}}</h3>
+	  </div>
+	</div>
+</template>
+
+<template name="exerciselogentry">
+	<div class="panel {{currentcolor}}">
+	  <div class="panel-heading">
+	  	{{#if currentuser}}
+	  	<button type="button" class="btn btn-small btn-default remove" title="Hide this log"><i class="fa fa-trash"></i></button>&nbsp;
+	  	{{/if}}
+	  	{{profile.name}} @ {{profile.groupname}}
+	  </div>
+	  {{#if body}}
+	  <div class="panel-body showcomments">
+ 		{{body}}
+	  </div>
+	  {{/if}}
+	  <div class="panel-footer align-right showcomments">
+	    <h3 class="panel-title">{{mins startdate enddate}} <span><i class="fa fa-comment-o"></i> {{zero comments}}</span> <span class="pull-right">{{formatTimestampWithTime startdate}}</span></h3>
+	  </div>
+	</div>
+</template>

@@ -1,0 +1,67 @@
+<template name="exerciseresult">
+	<div>
+		<ul class="nav nav-pills">
+	 		<li class="{{isActivePath '/result/group'}}"><a href="/result/group">{{profile.groupname}}</a></li>
+	  		<li class="{{isActivePath '/result/champion'}}"><a href="/result/champion">Champion</a></li>
+	  		<li class="{{isActivePath '/result/bands'}}"><a href="/result/bands">Bands</a></li>
+		</ul>
+	</div>
+	<br>
+
+	{{> exerciseresultband}}
+</template>
+
+<template name="exerciseresultband">
+	<div class="panel panel-success">
+	  <div class="panel-body">
+	  	<table class="table">
+	  		<tr>
+	  			<th>#</th>
+				{{#unless isActivePath '/result/bands'}}
+	  			<th>Name</th>
+	  			{{/unless}}
+	  			{{#unless isActivePath '/result/group'}}
+	  			<th>Band</th>
+	  			{{/unless}}
+	  			<th class="pull-right">Mins</th>
+	  		</tr>
+	  		{{#if isActivePath '/result/bands'}}
+				{{#each resultband}}
+	  				{{> resultentry}}
+	  			{{/each}}
+	  		{{else}}
+				{{#each resultyearband}}
+	  				{{> resultentry}}
+	  			{{/each}}
+	  		{{/if}}
+	  	</table>
+	  </div>
+	  <div class="panel-footer align-right">
+	    <h3 class="panel-title">Top 20 this {{> periodeselector}}</h3>
+	  </div>
+	</div>
+</template>
+
+<template name="resultentry">
+	<tr>
+		<td><b>{{index}}</b></td>
+		<td>{{name}}</td>
+		{{#if isActivePath '/result/champion'}}
+		<td>{{groupname}}</td>
+		{{/if}}
+		<td class="pull-right">{{result}}</td>
+	</tr>
+</template>
+
+<template name="periodeselector">
+	<div class="btn-group dropup">
+	  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{periode}} <span class="caret"></span>
+	  </button>
+	  <ul class="dropdown-menu">
+	    <li class="periode-year"><a href="#">year</a></li>
+	    <li class="periode-month"><a href="#">month</a></li>
+	    <li class="periode-week"><a href="#">week {{week}}</a></li>
+	    <li class="periode-lastweek"><a href="#">week {{lastweek}}</a></li>
+	  </ul>
+	</div>
+</template>

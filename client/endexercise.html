@@ -1,0 +1,31 @@
+<template name="endexercise">
+	<div class="panel panel-success">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">
+			<button type="button" class="btn btn-small btn-default remove"><i class="fa fa-trash"></i> <span class="hidden-xs">Remove</span></button>&nbsp;
+	
+	    	{{formatTimestampOnlyTime log.startdate}} - {{formatTimestampOnlyTime log.enddate}}</h3>
+	  </div>
+	  <div class="panel-body">
+	  	 {{#if recommended}}
+	  	 <div class="input-group">
+      		<span class="input-group-addon">
+        		<input type="checkbox" class="recommended">
+      		</span>
+      		<input type="text" readonly class="form-control" aria-label="..." value='Did you practise "{{recommended.description}}"?'>
+    	  </div><!-- /input-group -->
+    	  {{/if}}
+    	<br>
+    	<div class="form-horizontal">
+    		<div class="form-group">
+        		<div class="col-md-12">
+            		<textarea class="form-control body" rows="4" placeholder="What exercises did you do? (optional)"></textarea>
+        		</div>
+    		</div>
+		</div>
+		<div class="col-md-12">
+			<button type="button" class="btn btn-lg btn-success pull-right addlog"><i class="fa fa-plus"></i> log it</button>
+	  	</div>
+	  </div>
+	</div>
+</template>

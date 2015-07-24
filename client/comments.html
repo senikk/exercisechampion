@@ -1,0 +1,30 @@
+<template name="comments">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <button class="btn btn-default tolog"><i class="fa fa-caret-left" title="Back"></i> Back</button>
+    </div>
+    <div class="panel-body">
+      {{#each comments}}
+        {{> comment}}
+      {{/each}}
+      <br>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <div class="col-md-12">
+            <textarea class="form-control body" rows="3" placeholder="Comment?"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-success btn-lg col-xs-12 addcomment" title="Ok">Ok</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="comment">
+  	<div class="comment">
+  		<b>{{profile.name}}</b> <i>({{profile.groupname}})</i> {{body}}
+  		<div>
+  			<span class="smalldescription">{{ago timestamp}}</span>
+  		</div>
+  	</div>
+</template>

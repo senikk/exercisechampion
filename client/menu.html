@@ -1,0 +1,16 @@
+<template name="menu">
+  <div class="row">
+    {{#if loggedIn}}
+    <div class="col-xs-10 btn-group">
+      <button type="button" class="btn btn-primary btn-lg home" title="Home"><i class="fa fa-home {{active}}"></i> {{#if isactive}}{{exercisetime}}min{{/if}}</button>
+      <button type="button" class="btn btn-primary btn-lg exerciselog" title="Log"><i class="fa fa-list"></i> <span class="hidden-xs">log</span></button>
+      <button type="button" class="btn btn-primary btn-lg exerciseresult" title="Results"><i class="fa fa-list-ol"></i> <span class="hidden-xs">top20</span></button>
+      <button type="button" class="btn btn-primary btn-lg profile" title="Profile"><i class="fa fa-user"></i> <span class="hidden-xs">profile</span></button>
+    </div>
+    <div class="col-xs-2 btn-group">
+      <button type="button" class="btn btn-danger pull-right btn-lg logout"><i class="fa fa-lock" title="Logout"></i> <span class="hidden-xs">Logout</span></button>
+    </div>
+    {{/if}}
+  </div>
+  <br>
+</template>

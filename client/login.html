@@ -1,0 +1,67 @@
+<template name="login">
+	<div class="panel panel-danger">
+	  <div class="panel-heading">
+	  	<h4><i class="fa fa-unlock"></i> Sign In</h4>
+	  </div>
+	  <div class="panel-body">
+	    <form>
+	    	<div class="form-group col-xs-12">
+	    		<label>E-mail address</label>
+	        	<input type="email" class="col-xs-12" placeholder="Email" name="loginEmail">
+	        </div>
+	        <div class="form-group col-xs-12">
+	        	<label>Password</label>
+	        	<input type="password" class="col-xs-12" placeholder="Password" name="loginPassword">
+	        </div>
+	        <div class="form-group col-xs-12">
+	        	<input type="submit" class="col-xs-12 btn-lg btn-success" value="Sign In / Register">
+	    	</div>
+	    </form>
+	    <a href="/forgot">Forgot your password?</a>
+	  </div>
+	</div>
+</template>
+
+<template name="forgotPassword">
+	<div class="panel panel-danger">
+	  <div class="panel-heading">
+	  	<h4><i class="fa fa-unlock"></i> Forgotten password</h4>
+	  </div>
+	  <div class="panel-body">
+	    <form id="forgotPasswordForm">
+	    	<div class="form-group col-xs-12">
+	    		<label>E-mail address</label>
+	        	<input id="forgotPasswordEmail" type="email" class="col-xs-12" placeholder="Email" name="email">
+	        </div>
+	        <div class="form-group col-xs-12">
+	        	<input type="submit" class="col-xs-12 btn-lg btn-success" value="Send">
+	    	</div>
+	    </form>
+	  </div>
+	</div>
+</template>
+
+<template name="resetPassword">
+    {{#if resetPassword}}
+	<div class="panel panel-danger">
+	  <div class="panel-heading">
+	  	<h4><i class="fa fa-unlock"></i> Reset Password</h4>
+	  </div>
+	  <div class="panel-body">
+	    <form id="resetPasswordForm">
+	        <div class="form-group col-xs-12">
+	        	<label>Password</label>
+	        	<input id="resetPasswordPassword" type="password" class="col-xs-12" placeholder="Password" name="password">
+	        </div>
+	        <div class="form-group col-xs-12">
+	        	<label>Confirm</label>
+	        	<input id="resetPasswordPasswordConfirm" type="password" class="col-xs-12" placeholder="Password" name="password-confirm">
+	        </div>
+	        <div class="form-group col-xs-12">
+	        	<input type="submit" class="col-xs-12 btn-lg btn-success" value="Reset">
+	    	</div>
+	    </form>
+	  </div>
+	</div>
+    {{/if}}
+</template>
