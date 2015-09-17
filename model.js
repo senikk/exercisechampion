@@ -58,5 +58,7 @@ Recommended = new Meteor.Collection("recommended");
 //  owner: user id
 //  timestamp: Timestamp // created
 //  description: String
+//
+// Icons: http://www.icons4android.com/icon/1524
 
 

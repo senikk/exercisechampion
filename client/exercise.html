@@ -18,7 +18,6 @@
 <template name="version">
 	<div class="white">
 		<h3 class="title">Exercise Champion</h3>
-		<span>Beta v3 12. july 2015</span>
 	</div>
 	<br>
 </template>
@@ -26,9 +25,22 @@
 <template name="exercisemain">
 	<div>
 		{{#if exercising}}
-		<button type="button" class="btn btn-lg btn-danger exercise"><i class="fa fa-stop"></i> END EXERCISE</button>
+		<div>
+			{{#if ended}}
+			<button type="button" class="btn btn-lg btn-danger col-xs-12 exercise"><i class="fa fa-stop"></i> END EXERCISE</button>
+			{{else}}
+				{{#if pause}}
+				<button type="button" class="btn btn-lg btn-warning col-xs-12 pause"><i class="fa fa-pause"></i> START AGAIN</button>
+				{{else}}
+				<button type="button" class="btn btn-lg btn-danger col-xs-7 col-md-10 exercise"><i class="fa fa-stop"></i> END EXERCISE</button>
+				<button type="button" class="btn btn-lg btn-warning col-xs-5 col-md-2 pause"><i class="fa fa-pause"></i> PAUSE</button>
+				{{/if}}
+			{{/if}}
+		</div>
 		{{else}}
-		<button type="button" class="btn btn-lg btn-success exercise"><i class="fa fa-play"></i> START EXERCISING</button>
+		<div>
+			<button type="button" class="btn btn-lg btn-success col-xs-12 exercise"><i class="fa fa-play"></i> START EXERCISING</button>
+		</div>
 		{{/if}}
 	</div>
 </template>

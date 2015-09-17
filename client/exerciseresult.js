@@ -1,3 +1,14 @@
+Template.bandinfo.helpers({
+	group: function () {
+		if (Session.get("group")) {
+			return Group.findOne(Session.get("group"));
+		} else {
+			var profile = Profile.findOne({owner: Meteor.userId()});
+			return Group.findOne(profile.group);
+		}
+	}
+})
+
 Template.exerciseresult.helpers({
 	profile: function () {
 		return Profile.findOne({owner: Meteor.userId()});
@@ -9,8 +20,14 @@ function resultListMap(results) {
   	var curr_year = (new Date()).getFullYear();
 	var curr_month = (new Date()).getMonth() + 1;
 	var curr_week = (new Date()).getWeekNumber();
+	var lastmonth = curr_month - 1;
 	var lastweek = curr_week - 1;
 	var lastweekyear = curr_year;
+	var lastmonthyear = curr_year;
+	if (curr_month == 1) {
+		lastmonthyear = curr_year - 1;
+		lastmonth = 12;
+	}
 	if (curr_week == 0) { 
 	  	lastweek = 52;
 	  	lastweekyear = curr_year - 1;
@@ -32,6 +49,9 @@ function resultListMap(results) {
 			  	case "lastweek":
 	  				result.result = result.mins[lastweekyear].week[lastweek] || 0;
 	  				break;
+	  			case "lastmonth":
+					result.result = result.mins[lastmonthyear].month[lastmonth] || 0;
+	  				break;
 		  	}
 		} else {
 			result.result = 0;
@@ -46,7 +66,13 @@ Template.exerciseresultband.helpers({
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
 	  	var lastweek = curr_week - 1;
+	  	var lastmonth = curr_month - 1;
 	  	var lastweekyear = curr_year;
+	  	var lastmonthyear = curr_year;
+	  	if (curr_month == 1) {
+	  		lastmonthyear = curr_year - 1;
+	  		lastmonth = 12;
+	  	}
 	  	if (curr_week == 0) { 
 	  		lastweek = 52;
 	  		lastweekyear = curr_year - 1;
@@ -55,10 +81,16 @@ Template.exerciseresultband.helpers({
 	  	var sort = {};
 	  	var filter = {};
 
-	  	if (ActiveRoute.path('/result/group')) {
-			var profile = Profile.findOne({owner: Meteor.userId()});
-	  		if (profile) { filter = {group: profile.group}; }
+	  	if (ActiveRoute.path(new RegExp('/result/group/\w*')))
+	  	{
+	  		filter = {group: Session.get("group")};
+	  	} else if (ActiveRoute.path('/result/group')) {
+	  		var profile = Profile.findOne({owner: Meteor.userId()});
+		  	if (profile) { filter = {group: profile.group}; }
 	  	}
+
+	  	filter["groupname"] = {$exists: true};
+	  	filter["$where"] = "this.groupname.length > 1";
 	 	
 	  	switch(Session.get("periode")) {
 	  		case "year":
@@ -72,6 +104,9 @@ Template.exerciseresultband.helpers({
 	  			break;
 	  		case "lastweek":
 	  			sort["mins." + lastweekyear + ".week." + lastweek] = -1;
+	  			break;
+	  		case "lastmonth":
+	  			sort["mins." + lastmonthyear + ".month." + lastmonth] = -1;
 	  			break;
 	  	}
 
@@ -109,7 +144,7 @@ Template.exerciseresultband.helpers({
 
 	  	sort["timestamp"] = -1;
 
-	  	return resultListMap(Group.find({}, {sort: sort, limit: 20}));
+	  	return resultListMap(Group.find({name: {$exists: true}, $where: "this.name.length > 1"}, {sort: sort, limit: 20}));
 	},
 	periode: function () {
 		return Session.get("periode");
@@ -144,5 +179,8 @@ Template.periodeselector.events({
 	},
 	"click .periode-lastweek": function () {
 		Session.set("periode", "lastweek");
+	},
+	"click .periode-lastmonth": function () {
+		Session.set("periode", "lastmonth");
 	}
 });

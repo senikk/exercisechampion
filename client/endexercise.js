@@ -16,18 +16,7 @@ Template.endexercise.events({
 		var rec = template.find(".recommended");
 		if (rec) { recommended = rec.value; }
 
-		var l = Log.findOne({_id: log});
-		var d = new Date(l.startdate);
-		var diff = l.enddate - l.startdate;
-		var mins = Math.floor(diff / 1000 / 60);
-
-		Log.update({_id: log}, {$set: {
-			body: body,
-			recommended: !!recommended,
-			mins: mins
-		}});
-
-		Meteor.call("makepoints", log);
+		Meteor.call("endlog", log, body, recommended);
 
 		// update score (need to move)
 		Meteor.call("score", Meteor.userId(), function (error, score) {

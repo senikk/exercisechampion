@@ -1,25 +1,26 @@
 /* Default values */
 Session.setDefault("exercisetime", 0);
 Session.setDefault("logwho", "you");
-Session.setDefault("resultwho", "group");
+Session.setDefault("resultwho", "champion");
 Session.setDefault("alert-info", "");
 Session.setDefault("alert-ok", "");
-Session.setDefault("periode", "year");
+Session.setDefault("periode", "week");
+Session.setDefault("loading", true);
+Session.setDefault("group", null);
 exercisingVar = new StoredVar('ExerciseChampion.exercising');
 
 Tracker.autorun(function(){
 
-  Meteor.subscribe("profile");
+  Meteor.subscribe("profile", function () {
+  	Session.set("loading", false);
+  });
   Meteor.subscribe("log");
   Meteor.subscribe("comment");
   Meteor.subscribe("group");
   Meteor.subscribe("stat");
   Meteor.subscribe("recommended");
 
-  //Meteor.autosubscribe(function () {
-  //	Meteor.subscribe("bandtop");
-  //});
-
+/* Get scores */
   if(Meteor.userId()){
 
 	Meteor.call("score", Meteor.userId(), function (error, score) {
@@ -31,18 +32,21 @@ Tracker.autorun(function(){
 		if (exercisingVar.get()) {
 			var log = Log.findOne({_id: exercisingVar.get()});
 			var date = (new Date()).getTime();
-			if (log.enddate) date = log.enddate;
-
-			var diff = date - log.startdate;
+			if (!!log.pausedate) date = log.pausedate;
+			if (!!log.enddate) date = log.enddate;
+			var diff = date - log.startdate - (log.pausetime || 0);
 			var mins = Math.floor(diff / 1000 / 60);
 			Session.set("exercisetime", mins);
 		}
-	}, 1000);
+	}, 2000);
   }
 });
 
 /* Templates */
 Template.exercise.helpers({
+	loading: function () {
+		return Session.get("loading");
+	},
 	loggedIn: function () {
 		return !!Meteor.userId();
 	},
@@ -60,6 +64,16 @@ Template.exercise.helpers({
 Template.exercisemain.helpers({
 	exercising: function () {
 		return exercisingVar.get();
+	},
+	pause: function () {
+		var log = Log.findOne(exercisingVar.get());
+		if (!log) return false;
+		return !!log.pausedate;
+	},
+	ended: function () {
+		var log = Log.findOne(exercisingVar.get());
+		if (!log) return true;
+		return !!log.enddate;		
 	}
 });
 
@@ -78,6 +92,19 @@ Template.exercisemain.events({
 			});
 
 			exercisingVar.set(log);
+		}
+	},
+	"click .pause": function () {
+		var exercising = exercisingVar.get();
+		if (exercising) {
+			var log = Log.findOne(exercising);
+		
+			if (!!log.pausedate) { // start again
+				var diff = (new Date()).getTime() - log.pausedate;
+				Log.update({_id: exercising}, {$set: {pausedate: null}, $inc: {pausetime: diff}});
+			} else { // pause
+				Log.update({_id: exercising}, {$set: {pausedate: (new Date()).getTime()}});
+			}
 		}
 	}
 });

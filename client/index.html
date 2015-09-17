@@ -6,17 +6,23 @@
 
 	<body>
 		{{#if alertinfo}}
-      		<div class="alert alert-danger">
+      	  <div class="alert alert-danger">
  			{{alertinfo}}
     	  </div>
 	    {{/if}}
 		{{#if alertok}}
-      		<div class="alert alert-info">
+      	  <div class="alert alert-info">
  			{{alertok}}
     	  </div>
 	    {{/if}}
 
-		{{> menu}}
-	    {{> yield}}
+	    {{#if loading}}
+		  <div class="alert alert-info">
+			Loading Exercise Champion...
+		  </div>
+		{{else}}
+			{{> menu}}
+		    {{> yield}}
+	    {{/if}}    
 	</body>
 </template>

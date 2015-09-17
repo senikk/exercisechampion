@@ -61,7 +61,6 @@ Template.resetPassword.events({
         passwordConfirm = resetPasswordForm.find('#resetPasswordPasswordConfirm').val();
 
     if (!!password && !!passwordConfirm && password.length > 0 && (password == passwordConfirm)) {
-      console.log("yes");
       Accounts.resetPassword(Session.get('resetPassword'), password, function(err) {
       	if (err) {
         	setAlertInfo("We are sorry but something went wrong.");

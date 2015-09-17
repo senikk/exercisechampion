@@ -1,3 +1,36 @@
+
+function makepoints(logid) {
+	var log = Log.findOne({_id: logid});
+	var user = log.owner;
+	var mins = log.mins;
+
+	// log points
+	var d = new Date(log.startdate);
+	var curr_year = d.getFullYear();
+	var curr_week = d.getWeekNumber();
+	var curr_month = d.getMonth(); curr_month++;
+
+	// profile points
+	var profile = Profile.findOne({owner: user});
+	var contesters = Profile.find({group: profile.group, mins: {$exists: true}}).count() || 1;
+
+	var inc = {};
+	inc["mins." + curr_year + ".year"] = mins;
+	inc["mins." + curr_year + ".week." + curr_week] = mins;
+	inc["mins." + curr_year + ".month." + curr_month] = mins;
+
+	Profile.update({owner: user}, {$inc: inc});
+
+	// group points
+	mins = Math.floor(mins / contesters);
+	inc["mins." + curr_year + ".year"] = mins;
+	inc["mins." + curr_year + ".week." + curr_week] = mins;
+	inc["mins." + curr_year + ".month." + curr_month] = mins;
+
+	Group.update({_id: profile.group}, {$inc: inc});
+	Log.update({_id: log._id}, {$set: {group: profile.group, groupmins: mins, groupcontesters: contesters}});
+}
+
 Meteor.methods({
 	removeprofile: function (profile) {
 		Profile.remove(profile);
@@ -5,59 +38,29 @@ Meteor.methods({
 	removegroup: function (group) {
 		Group.remove(group);
 	},
-	makepoints: function (logid) {
-		var log = Log.findOne({_id: logid});
-		var user = log.owner;
-		var mins = log.mins;
-		var d = new Date(log.startdate);
+	addlog: function (owner, mins, body, recommended) {
+		var logid = Log.insert({
+			owner: owner,
+			startdate: (new Date()).getTime(),
+			body: body,
+			recommended: !!recommended,
+			mins: mins
+		});
 
-		// log points
-  		var curr_year = d.getFullYear();
-  		var curr_week = d.getWeekNumber();
-		var curr_month = d.getMonth(); curr_month++;
-
-		// profile points
-		var profile = Profile.findOne({owner: user});
-		var contesters = Profile.find({group: profile.group, mins: {$exists: true}}).count();
-
-		var inc = {};
-		inc["mins." + curr_year + ".year"] = mins;
-		inc["mins." + curr_year + ".week." + curr_week] = mins;
-		inc["mins." + curr_year + ".month." + curr_month] = mins;
-
-		Profile.update({owner: user}, {$inc: inc});
-
-		// group points
-		mins = Math.floor(log.mins / contesters);
-		inc["mins." + curr_year + ".year"] = mins;
-		inc["mins." + curr_year + ".week." + curr_week] = mins;
-		inc["mins." + curr_year + ".month." + curr_month] = mins;
-
-		Group.update({_id: profile.group}, {$inc: inc});
-		Log.update({_id: log._id}, {$set: {group: profile.group, groupmins: mins, groupcontesters: contesters}});
+		makepoints(logid);
 	},
-	makeprofilepoints: function (owner) {
-		var logs = Log.find({owner: owner}).fetch();
+	endlog: function (logid, body, recommended) {
+		var log = Log.findOne({_id: logid});
+		var diff = log.enddate - log.startdate - (log.pausetime || 0);
+		var mins = Math.floor(diff / 1000 / 60);
 
-		for(var l in logs) {
-			var log = logs[l];
-			var mins = log.mins;
+		Log.update({_id: logid}, {$set: {
+			body: body,
+			recommended: !!recommended,
+			mins: mins
+		}});
 
-			if (mins > 0) {
-				// log points
-				var d = new Date(log.startdate);
-		  		var curr_year = d.getFullYear();
-		  		var curr_week = d.getWeekNumber();
-				var curr_month = d.getMonth(); curr_month++;
-
-				var inc = {};
-				inc["mins." + curr_year + ".year"] = mins;
-				inc["mins." + curr_year + ".week." + curr_week] = mins;
-				inc["mins." + curr_year + ".month." + curr_month] = mins;
-
-				Profile.update({owner: owner}, {$inc: inc});			
-			}
-		}
+		makepoints(logid);
 	},
 	score: function (user) {
 		var profile = Profile.findOne({owner: user});

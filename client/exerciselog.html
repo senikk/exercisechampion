@@ -1,6 +1,7 @@
 <template name="exerciselog">
 	<ul class="nav nav-pills">
 		<li class="{{isActivePath '/log/you'}}"><a href="/log/you">You</a></li>
+		<li class="{{isActivePath '/log/weeks'}}"><a href="/log/weeks">Weeks</a></li>
 		<li class="{{isActivePath '/log/all'}}"><a href="/log/all">Everyone</a></li>
 		<li class="{{isActivePath '/log/now'}}"><a href="/log/now">Now</a></li>
 	</ul>
@@ -14,10 +15,32 @@
 			<div class="well">No one have started exercising for the last two hours.</div>
 		{{/if}}
 	{{else}}
-		{{#each log}}
-			{{> exerciselogentry}}
-		{{/each}}
+		{{#if isActivePath '/log/weeks'}}
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					Year {{year}} week summary
+				</div>
+			</div>
+			{{#each weeks}}
+				{{> weekentry}}
+			{{/each}}
+		{{else}}
+			{{#if isActivePath '/log/you'}}
+				{{#unless exercising}}
+					{{> logexercise}}
+				{{/unless}}
+			{{/if}}
+			{{#each log}}
+				{{> exerciselogentry}}
+			{{/each}}
+		{{/if}}
 	{{/if}}
+</template>
+
+<template name="weekentry">
+	<div class="well">
+		Week {{week}} <span class="pull-right">{{minsastime mins}}</span>
+	</div>
 </template>
 
 <template name="exerciselogentrynow">
@@ -38,14 +61,67 @@
 	  	<button type="button" class="btn btn-small btn-default remove" title="Hide this log"><i class="fa fa-trash"></i></button>&nbsp;
 	  	{{/if}}
 	  	{{profile.name}} @ {{profile.groupname}}
+	  	{{#if currentuser}}
+	  	<div class="pull-right">
+	  		<button type="button" class="btn btn-small btn-default edit" title="Edit this log"><i class="fa fa-edit"></i></button>
+	  	</div>
+	  	{{/if}}
 	  </div>
-	  {{#if body}}
+	  {{#if bodyoredit}}
 	  <div class="panel-body showcomments">
- 		{{body}}
+	  	{{#if edit}}
+	  	   	<div class="form-group">
+        		<div class="col-md-12">
+					<textarea class="form-control col-md-12 body" rows="4">{{body}}</textarea>
+				</div>
+			</div>
+			<div class="col-md-12">
+	  			<button class="btn btn-lg btn-success pull-right save"><i class="fa fa-save"></i> Save</button>
+			</div>
+	  	{{else}}
+ 			{{body}}
+ 		{{/if}}
 	  </div>
 	  {{/if}}
 	  <div class="panel-footer align-right showcomments">
-	    <h3 class="panel-title">{{mins startdate enddate}} <span><i class="fa fa-comment-o"></i> {{zero comments}}</span> <span class="pull-right">{{formatTimestampWithTime startdate}}</span></h3>
+	    <h3 class="panel-title">{{mins}} mins <span><i class="fa fa-comment-o"></i> {{zero comments}}</span> <span class="pull-right">{{formatTimestampWithTime startdate}}</span></h3>
+	  </div>
+	</div>
+</template>
+
+<template name="logexercise">
+	<div class="panel panel-info">
+	  <div class="panel-heading">
+	  	Manually registering an exercise
+	  </div>
+	  <div class="panel-body">
+	  	 {{#if recommended}}
+	  	 <div class="input-group">
+      		<span class="input-group-addon">
+        		<input type="checkbox" class="recommended">
+      		</span>
+      		<input type="text" readonly class="form-control" aria-label="..." value='Did you practise "{{recommended.description}}"?'>
+    	  </div><!-- /input-group -->
+    	  {{/if}}
+    	<br>
+    	<div class="form-horizontal">
+    		<div class="form-group">
+        		<div class="col-md-12">
+            		<textarea class="form-control body" rows="4" placeholder="What exercises did you do? (required)"></textarea>
+        		</div>
+    		</div>
+    		<div class="form-group">
+				<div class="col-md-4 pull-right">
+					<div class="input-group input-group-lg">
+							<input type="number" class="form-control mins" placeholder="How many minutes? (required)" aria-describedby="sizing-addon1">
+							<span class="input-group-addon" id="sizing-addon1">min</span>
+					</div>
+				</div>
+    		</div>
+		</div>
+		<div class="form-horizontal">
+      		<button type="button" class="btn btn-lg btn-success pull-right addlog"><i class="fa fa-plus"></i> log it</button>
+	  	</div>
 	  </div>
 	</div>
 </template>

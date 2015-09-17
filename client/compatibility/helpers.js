@@ -19,7 +19,7 @@ Handlebars.registerHelper("ago", function(value) {
 	}
 });
 
-Handlebars.registerHelper("mins", function(start, end) {
+Handlebars.registerHelper("timeasmins", function(start, end) {
 	var diff = end - start;
 	var mins = Math.floor(diff / 1000 / 60);
 

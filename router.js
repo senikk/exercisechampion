@@ -20,16 +20,6 @@ Router.route('/admin/remove/group/:group', function () {
 	Router.go("/");
 });
 
-Router.route('/admin/makepoints/:log', function () {
-	Meteor.call("makepoints", this.params.log);
-	Router.go("/");
-});
-
-Router.route('/admin/makeprofilepoints/:profile', function () {
-	Meteor.call("makeprofilepoints", this.params.profile);
-	Router.go("/");
-});
-
 Router.route('/profile', function () {
 	this.render('profile');
 });
@@ -61,6 +51,11 @@ Router.route('/result', function () {
 });
 
 Router.route('/result/group', function () {
+	this.render('exerciseresult');
+});
+
+Router.route('/result/group/:group', function () {
+	Session.set("group", this.params.group);
 	this.render('exerciseresult');
 });
 

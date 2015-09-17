@@ -12,7 +12,10 @@
 </template>
 
 <template name="exerciseresultband">
-	<div class="panel panel-success">
+	<div class="panel panel-info">
+	  {{#if isActivePath regex='/result/group*'}}
+	  	{{> bandinfo}}
+	  {{/if}}
 	  <div class="panel-body">
 	  	<table class="table">
 	  		<tr>
@@ -20,7 +23,7 @@
 				{{#unless isActivePath '/result/bands'}}
 	  			<th>Name</th>
 	  			{{/unless}}
-	  			{{#unless isActivePath '/result/group'}}
+	  			{{#unless isActivePath regex='/result/group*'}}
 	  			<th>Band</th>
 	  			{{/unless}}
 	  			<th class="pull-right">Mins</th>
@@ -45,12 +48,24 @@
 <template name="resultentry">
 	<tr>
 		<td><b>{{index}}</b></td>
-		<td>{{name}}</td>
+		{{#if isActivePath '/result/bands'}}
+			<td><a href="/result/group/{{_id}}">{{name}}</a></td>
+		{{else}}
+			<td>{{name}}</td>
+		{{/if}}
 		{{#if isActivePath '/result/champion'}}
-		<td>{{groupname}}</td>
+			<td><a href="/result/group/{{group}}">{{groupname}}</a></td>
 		{{/if}}
 		<td class="pull-right">{{result}}</td>
 	</tr>
+</template>
+
+<template name="bandinfo">
+	{{#with group}}
+	<div class="panel-heading">
+	  	{{name}}
+	</div>
+	{{/with}}
 </template>
 
 <template name="periodeselector">
@@ -60,8 +75,9 @@
 	  <ul class="dropdown-menu">
 	    <li class="periode-year"><a href="#">year</a></li>
 	    <li class="periode-month"><a href="#">month</a></li>
-	    <li class="periode-week"><a href="#">week {{week}}</a></li>
-	    <li class="periode-lastweek"><a href="#">week {{lastweek}}</a></li>
+	    <li class="periode-week"><a href="#">week ({{week}})</a></li>
+	    <li class="periode-lastweek"><a href="#">last week ({{lastweek}})</a></li>
+	    <li class="periode-lastmonth"><a href="#">last month</a></li>
 	  </ul>
 	</div>
 </template>
