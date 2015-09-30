@@ -2,7 +2,7 @@ App.info({
   id: 'no.qrsalg.exercisechampion',
   name: 'Exercise Champion',
   description: 'Become the champion band exerciser',
-  version: '1.0.0',
+  version: '1.0.1',
   author: 'Terje Pedersen',
   email: 'post@qrsalg.com',
   website: 'https://www.facebook.com/groups/exercisechampion/'
