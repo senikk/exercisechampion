@@ -1,8 +1,9 @@
 <template name="exerciseresult">
 	<div>
 		<ul class="nav nav-pills">
-	 		<li class="{{isActivePath '/result/group'}}"><a href="/result/group">{{profile.groupname}}</a></li>
-	  		<li class="{{isActivePath '/result/champion'}}"><a href="/result/champion">Champion</a></li>
+	 		<li class="{{isActivePath regex='/result/group*'}}"><a href="/result/group">{{profile.groupname}}</a></li>
+	  		<li class="{{isActivePath '/result/champion'}}"><a href="/result/champion">Champion</a></li>	  		
+	  		<li class="{{isActivePath regex='/result/instrument*'}}"><a href="/result/instrument">Instrument</a></li>
 	  		<li class="{{isActivePath '/result/bands'}}"><a href="/result/bands">Bands</a></li>
 		</ul>
 	</div>
@@ -15,6 +16,25 @@
 	<div class="panel panel-info">
 	  {{#if isActivePath regex='/result/group*'}}
 	  	{{> bandinfo}}
+	  {{/if}}	  
+	  {{#if isActivePath regex='/result/instrument*'}}
+	  <div class="panel-heading">
+		<ul class="nav nav-pills">
+			<li><a href="#" class="disabled" style="color: black;">Search:</a></li>
+			<li>
+			 	{{> instrument2}}
+	 		</li>
+	 		<li><button class="form-control clearsearch">Clear</button></li>
+		</ul>
+		{{#if instruments}}
+		<ul class="nav nav-pills">
+			<li><a href="#" class="disabled" style="color: black;">Your instruments:</a></li>
+			{{#each instruments}}
+			<li class="{{isActivePath '/result/instrument/{{_id}}'}}"><a href="/result/instrument/{{_id}}">{{name}}</a></li>
+			{{/each}}
+		</ul>
+		{{/if}}
+	  </div>
 	  {{/if}}
 	  <div class="panel-body">
 	  	<table class="table">
@@ -54,6 +74,9 @@
 			<td>{{name}}</td>
 		{{/if}}
 		{{#if isActivePath '/result/champion'}}
+			<td><a href="/result/group/{{group}}">{{groupname}}</a></td>
+		{{/if}}
+		{{#if isActivePath regex='/result/instrument*'}}
 			<td><a href="/result/group/{{group}}">{{groupname}}</a></td>
 		{{/if}}
 		<td class="pull-right">{{result}}</td>

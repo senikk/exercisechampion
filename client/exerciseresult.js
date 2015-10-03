@@ -15,7 +15,7 @@ Template.exerciseresult.helpers({
 	}
 });
 
-function resultListMap(results) {
+function resultListMap(results, instrumentid) {
 	var periode = Session.get("periode");
   	var curr_year = (new Date()).getFullYear();
 	var curr_month = (new Date()).getMonth() + 1;
@@ -33,35 +33,142 @@ function resultListMap(results) {
 	  	lastweekyear = curr_year - 1;
 	}
 	
-	return results.map(function(result, index){
+	return results.map(function(result, index) {
 		result.index = index + 1;
-		if (!!result.mins) {
-		  	switch(periode) {
-		  		case "year":
-		    		result.result = result.mins[curr_year].year || 0;
-		  			break;
-		  		case "month":
-		    		result.result = result.mins[curr_year].month[curr_month] || 0;
-		  			break;
-		  		case "week":
-		    		result.result = result.mins[curr_year].week[curr_week] || 0;
-		  			break;
-			  	case "lastweek":
-	  				result.result = result.mins[lastweekyear].week[lastweek] || 0;
-	  				break;
-	  			case "lastmonth":
-					result.result = result.mins[lastmonthyear].month[lastmonth] || 0;
-	  				break;
-		  	}
+
+		if (instrumentid != "") {
+			if (!!result.instrument && !!result.instrument[instrumentid]) {
+			  	switch(periode) {
+			  		case "year":
+			    		result.result = result.instrument[instrumentid].mins[curr_year].year || 0;
+			  			break;
+			  		case "month":
+			    		result.result = result.instrument[instrumentid].mins[curr_year].month[curr_month] || 0;
+			  			break;
+			  		case "week":
+			    		result.result = result.instrument[instrumentid].mins[curr_year].week[curr_week] || 0;
+			  			break;
+				  	case "lastweek":
+		  				result.result = result.instrument[instrumentid].mins[lastweekyear].week[lastweek] || 0;
+		  				break;
+		  			case "lastmonth":
+						result.result = result.instrument[instrumentid].mins[lastmonthyear].month[lastmonth] || 0;
+		  				break;
+			  	}
+			} else {
+				result.result = 0;
+			}
 		} else {
-			result.result = 0;
+			if (!!result.mins) {
+			  	switch(periode) {
+			  		case "year":
+			    		result.result = result.mins[curr_year].year || 0;
+			  			break;
+			  		case "month":
+			    		result.result = result.mins[curr_year].month[curr_month] || 0;
+			  			break;
+			  		case "week":
+			    		result.result = result.mins[curr_year].week[curr_week] || 0;
+			  			break;
+				  	case "lastweek":
+		  				result.result = result.mins[lastweekyear].week[lastweek] || 0;
+		  				break;
+		  			case "lastmonth":
+						result.result = result.mins[lastmonthyear].month[lastmonth] || 0;
+		  				break;
+			  	}
+			} else {
+				result.result = 0;
+			}	
 		}
+
 		return result;
 	});
 }
 
+function currentPosition(instrumentid) {
+	var gtmins = {};
+  	var curr_year = (new Date()).getFullYear();
+  	var curr_month = (new Date()).getMonth() + 1;
+  	var curr_week = (new Date()).getWeekNumber();
+  	var lastweek = curr_week - 1;
+  	var lastmonth = curr_month - 1;
+  	var lastweekyear = curr_year;
+  	var lastmonthyear = curr_year;
+  	if (curr_month == 1) {
+  		lastmonthyear = curr_year - 1;
+  		lastmonth = 12;
+  	}
+  	if (curr_week == 0) { 
+  		lastweek = 52;
+  		lastweekyear = curr_year - 1;
+  	}
+
+  	var periode = Session.get("periode"); 
+  	var sort = {};
+  	var filter = {};
+	var profile = Profile.findOne({owner: Meteor.userId()});
+
+  	filter["$where"] = "this.groupname.length > 1";
+	var mins = 0;
+	var prefix = "";
+	var minsobj = null;
+
+	if (instrumentid != null && instrumentid != "") {
+		prefix = "instrument." + instrumentid + ".";
+		try { minsobj = profile['instrument'][instrumentid]['mins']; } catch(e) { return 0; };
+	} else {
+		minsobj = profile['mins'];
+	}
+ 	
+  	switch(periode) {
+  		case "year":
+		  	try { mins = minsobj[curr_year]['year']; } catch(e) {};
+		  	gtmins[prefix + "mins." + curr_year + ".year"] = {$gt: mins};
+  			break;
+  		case "month":
+		  	try { mins = minsobj[curr_year]['month'][curr_month]; } catch(e) {};
+		  	gtmins[prefix + "mins." + curr_year + ".month." + curr_month] = {$gt: mins};
+  			break;
+  		case "week":
+  			try { mins = minsobj[curr_year]['week'][curr_week]; } catch(e) {};
+  			gtmins[prefix + "mins." + curr_year + ".week." + curr_week] = {$gt: mins};
+  			break;
+  		case "lastweek":
+		  	try { mins = minsobj[lastweekyear]['week'][lastweek]; } catch(e) {}
+		  	gtmins[prefix + "mins." + lastweekyear + ".week." + lastweek] = {$gt: mins};
+  			break;
+  		case "lastmonth":
+		  	try { mins = minsobj[lastmonthyear]['month'][lastmonth]; } catch(e) {}
+		  	gtmins[prefix + "mins." + lastmonthyear + ".month." + lastmonth] = {$gt: mins};
+  			break;
+  	}
+
+  	sort["timestamp"] = -1;
+
+	return Profile.find(gtmins).count()+1;
+}
+
+Template.exerciseresultband.events({
+	"click .clearsearch": function (event, template) {
+		template.find(".instrument").value = "";
+	}
+});
+
 Template.exerciseresultband.helpers({
+	instruments: function () {
+		var profile = Profile.findOne({owner: Meteor.userId()});
+		var instruments = [];
+		if (!!profile && !!profile.instrument) {
+			Object.keys(profile.instrument).forEach(function (instrumentid) {
+				instruments.push(Instrument.findOne(instrumentid));		
+			});			
+		}
+
+		return instruments;
+	},	
 	resultyearband: function () {
+	  	var limit = 2;
 	  	var curr_year = (new Date()).getFullYear();
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
@@ -80,39 +187,66 @@ Template.exerciseresultband.helpers({
 	  	var periode = Session.get("periode"); 
 	  	var sort = {};
 	  	var filter = {};
+	  	var prefix = "";
+	  	var instrumentid = "";
 
 	  	if (ActiveRoute.path(new RegExp('/result/group/\w*')))
 	  	{
 	  		filter = {group: Session.get("group")};
 	  	} else if (ActiveRoute.path('/result/group')) {
-	  		var profile = Profile.findOne({owner: Meteor.userId()});
+		  	var profile = Profile.findOne({owner: Meteor.userId()});
 		  	if (profile) { filter = {group: profile.group}; }
+	  	} else if (ActiveRoute.path('/result/instrument')) {
+	  		var instrument = Session.get("instrument2");
+	  		if (instrument == null) {
+	  			instrument = Session.get("instrument");
+	  			if (instrument == null) return [];
+
+	  			Session.set("instrument2", instrument);
+	  		}
+
+	  		prefix = "instrument." + instrument._id + ".";
+	  		instrumentid = instrument._id;
 	  	}
 
 	  	filter["groupname"] = {$exists: true};
-	  	filter["$where"] = "this.groupname.length > 1";
+		filter["$where"] = "this.groupname.length > 1";
+
+	  	if (instrumentid != "") {
+	  		filter["instrument." + instrumentid] = {$exists: true};
+	  	}
 	 	
-	  	switch(Session.get("periode")) {
+	  	switch(periode) {
 	  		case "year":
-			  	sort["mins." + curr_year + ".year"] = -1;
+			  	sort[prefix + "mins." + curr_year + ".year"] = -1;
 	  			break;
 	  		case "month":
-	  		  	sort["mins." + curr_year + ".month." + curr_month] = -1;
+	  		  	sort[prefix + "mins." + curr_year + ".month." + curr_month] = -1;
 	  			break;
 	  		case "week":
-	  			sort["mins." + curr_year + ".week." + curr_week] = -1;
+	  			sort[prefix + "mins." + curr_year + ".week." + curr_week] = -1;
 	  			break;
 	  		case "lastweek":
-	  			sort["mins." + lastweekyear + ".week." + lastweek] = -1;
+	  			sort[prefix + "mins." + lastweekyear + ".week." + lastweek] = -1;
 	  			break;
 	  		case "lastmonth":
-	  			sort["mins." + lastmonthyear + ".month." + lastmonth] = -1;
+	  			sort[prefix + "mins." + lastmonthyear + ".month." + lastmonth] = -1;
 	  			break;
 	  	}
 
 	  	sort["timestamp"] = -1;
 
-	  	return resultListMap(Profile.find(filter, {sort: sort, limit: 20}));
+	  	var you = resultListMap(Profile.find({owner: Meteor.userId()}), instrumentid); 
+	  	if (you != null && you.length == 1) {
+	  		you[0].index = currentPosition(instrumentid);
+	  	
+	  		if (you[0].index > limit) {
+	  			var all = resultListMap(Profile.find(filter, {sort: sort, limit: limit - 1}), instrumentid);
+	  			return all.concat(you)
+	  		}
+	  	}
+
+	  	return resultListMap(Profile.find(filter, {sort: sort, limit: limit}), instrumentid); 
 	},
 	resultband: function () {
 	  	var curr_year = (new Date()).getFullYear();

@@ -80,6 +80,7 @@ Template.logexercise.events({
 		var body = template.find(".body").value || "";
 		var mins = parseInt(template.find(".mins").value) | 0;
 		var owner = Meteor.userId();
+		var instrument = Session.get("instrument");
 
 		if (body.length == 0) {
 			setAlertInfo("You need to enter what exercises you did");
@@ -95,7 +96,7 @@ Template.logexercise.events({
 		var rec = template.find(".recommended");
 		if (rec) { recommended = rec.value; }
 
-		Meteor.call("addlog", owner, mins, body, recommended);
+		Meteor.call("addlog", owner, mins, body, recommended, instrument);
 
 		// update score (need to move)
 		Meteor.call("score", Meteor.userId(), function (error, score) {

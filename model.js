@@ -4,6 +4,7 @@ Comment = new Meteor.Collection("comment");
 Group = new Meteor.Collection("group");
 Stat = new Meteor.Collection("stat");
 Recommended = new Meteor.Collection("recommended");
+Instrument = new Meteor.Collection("instrument");
 
 // Profile
 //  owner: user id

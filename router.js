@@ -20,6 +20,10 @@ Router.route('/admin/remove/group/:group', function () {
 	Router.go("/");
 });
 
+Router.route('/stamnes', function () {
+	this.render('admin');
+});
+
 Router.route('/profile', function () {
 	this.render('profile');
 });
@@ -60,6 +64,15 @@ Router.route('/result/group/:group', function () {
 });
 
 Router.route('/result/champion', function () {
+	this.render('exerciseresult');
+});
+
+Router.route('/result/instrument', function () {
+	this.render('exerciseresult');
+});
+
+Router.route('/result/instrument/:instrumentid', function () {
+	Session.set("instrument2", Instrument.findOne(this.params.instrumentid));
 	this.render('exerciseresult');
 });
 

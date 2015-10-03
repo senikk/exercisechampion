@@ -55,3 +55,7 @@ button.exercise, button.pause {
     animation: activeanim 2s infinite;
     -webkit-animation: activeanim 2s infinite;
 }
+
+.clearfix {
+	clear: both;
+}

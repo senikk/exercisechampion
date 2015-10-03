@@ -39,3 +39,7 @@ Meteor.publish("stat", function () {
 Meteor.publish("recommended", function () {
   return Recommended.find();
 });
+
+Meteor.publish("instrument", function () {
+  return Instrument.find();
+});

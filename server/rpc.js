@@ -18,10 +18,14 @@ function makepoints(logid) {
 	inc["mins." + curr_year + ".year"] = mins;
 	inc["mins." + curr_year + ".week." + curr_week] = mins;
 	inc["mins." + curr_year + ".month." + curr_month] = mins;
+	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".year"] = mins;
+	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".week." + curr_week] = mins;
+	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".month." + curr_month] = mins;
 
 	Profile.update({owner: user}, {$inc: inc});
 
 	// group points
+	inc = {};
 	mins = Math.floor(mins / contesters);
 	inc["mins." + curr_year + ".year"] = mins;
 	inc["mins." + curr_year + ".week." + curr_week] = mins;
@@ -29,27 +33,54 @@ function makepoints(logid) {
 
 	Group.update({_id: profile.group}, {$inc: inc});
 	Log.update({_id: log._id}, {$set: {group: profile.group, groupmins: mins, groupcontesters: contesters}});
+
+	// instrument points
+	inc = {};
+	mins = log.mins;
+	inc["mins." + curr_year + ".year"] = mins;
+	inc["mins." + curr_year + ".week." + curr_week] = mins;
+	inc["mins." + curr_year + ".month." + curr_month] = mins;
+
+	Instrument.update({_id: log.instrumentid}, {$inc: inc});
+	Log.update({_id: log._id}, {$set: {instrumentmins: mins}});	
 }
 
 Meteor.methods({
+	addinstrument: function (instrument) {
+		if (instrument == null) throw new Meteor.Error(400, "Instrument name empty");
+
+		instrument = instrument.trim();
+		if (instrument.length == 0) throw new Meteor.Error(400, "Instrument name empty");
+
+		if (Instrument.findOne({name: { $regex : new RegExp(instrument, "i") }}) != null) throw new Meteor.Error(400, "Allready added " + instrument);
+
+		console.log("inserting " + instrument);
+
+		Instrument.insert({
+			name: instrument,
+			startdate: (new Date()).getTime()
+		});
+	},
 	removeprofile: function (profile) {
 		Profile.remove(profile);
 	},
 	removegroup: function (group) {
 		Group.remove(group);
 	},
-	addlog: function (owner, mins, body, recommended) {
+	addlog: function (owner, mins, body, recommended, instrument) {
 		var logid = Log.insert({
 			owner: owner,
 			startdate: (new Date()).getTime(),
 			body: body,
 			recommended: !!recommended,
-			mins: mins
+			mins: mins,
+			instrumentname: instrument.name,
+			instrumentid: instrument._id
 		});
 
 		makepoints(logid);
 	},
-	endlog: function (logid, body, recommended) {
+	endlog: function (logid, body, recommended, instrument) {
 		var log = Log.findOne({_id: logid});
 		var diff = log.enddate - log.startdate - (log.pausetime || 0);
 		var mins = Math.floor(diff / 1000 / 60);
@@ -57,7 +88,9 @@ Meteor.methods({
 		Log.update({_id: logid}, {$set: {
 			body: body,
 			recommended: !!recommended,
-			mins: mins
+			mins: mins,
+			instrumentname: instrument.name,
+			instrumentid: instrument._id
 		}});
 
 		makepoints(logid);

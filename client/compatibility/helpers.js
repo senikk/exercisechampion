@@ -59,6 +59,11 @@ Handlebars.registerHelper("formatTimestampWithTime", function(timestamp) {
   return curr_date + "." + curr_month + "." + curr_year + " " + ("0"+curr_hours).slice(-2) + ":" + ("0"+curr_minutes).slice(-2);  
 });
 
+Handlebars.registerHelper("instrument", function(instrument) {
+	if (instrument == null) return "";
+	return "on " + instrument;
+});
+
 ChangeProfile = function (data) {
 	var profile = Profile.findOne({owner: Meteor.userId()});
 	if (profile != undefined) {

@@ -15,8 +15,9 @@ Template.endexercise.events({
 		var recommended = false;
 		var rec = template.find(".recommended");
 		if (rec) { recommended = rec.value; }
+		var instrument = Session.get("instrument");
 
-		Meteor.call("endlog", log, body, recommended);
+		Meteor.call("endlog", log, body, recommended, instrument);
 
 		// update score (need to move)
 		Meteor.call("score", Meteor.userId(), function (error, score) {

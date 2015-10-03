@@ -19,6 +19,7 @@ Tracker.autorun(function(){
   Meteor.subscribe("group");
   Meteor.subscribe("stat");
   Meteor.subscribe("recommended");
+  Meteor.subscribe("instrument");
 
 /* Get scores */
   if(Meteor.userId()){

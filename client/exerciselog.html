@@ -79,12 +79,12 @@
 	  			<button class="btn btn-lg btn-success pull-right save"><i class="fa fa-save"></i> Save</button>
 			</div>
 	  	{{else}}
- 			{{body}}
- 		{{/if}}
+	  		{{body}}
+	 	{{/if}}
 	  </div>
 	  {{/if}}
 	  <div class="panel-footer align-right showcomments">
-	    <h3 class="panel-title">{{mins}} mins <span><i class="fa fa-comment-o"></i> {{zero comments}}</span> <span class="pull-right">{{formatTimestampWithTime startdate}}</span></h3>
+	    <h3 class="panel-title">{{mins}} min ({{minsastime mins}}) {{instrument instrumentname}} <span><i class="fa fa-comment-o"></i> {{zero comments}}</span> <span class="pull-right">{{formatTimestampWithTime startdate}}</span></h3>
 	  </div>
 	</div>
 </template>
@@ -109,6 +109,11 @@
         		<div class="col-md-12">
             		<textarea class="form-control body" rows="4" placeholder="What exercises did you do? (required)"></textarea>
         		</div>
+    		</div>
+    		 <div class="form-group">
+        		<div class="col-md-12"> 
+    				{{> instrument}}
+    			</div>
     		</div>
     		<div class="form-group">
 				<div class="col-md-4 pull-right">
