@@ -37,7 +37,7 @@ function resultListMap(results, instrumentid) {
 	return results.map(function(result, index) {
 		result.index = index + 1;
 
-		if (instrumentid != "") {
+		if (instrumentid != undefined && instrumentid != "") {
 			if (!!result.instrument && !!result.instrument[instrumentid]) {
 			  	switch(periode) {
 			  		case "year":
@@ -122,7 +122,7 @@ function currentPosition(instrumentid) {
 	var prefix = "";
 	var minsobj = null;
 
-	if (instrumentid != null && instrumentid != "") {
+	if (instrumentid != undefined && instrumentid != "") {
 		prefix = "instrument." + instrumentid + ".";
 		try { minsobj = profile['instrument'][instrumentid]['mins']; } catch(e) { return 0; };
 	} else {

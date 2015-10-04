@@ -128,7 +128,7 @@ Meteor.methods({
   		var memberpercent = 100;
   		var grouppercent = 100;
 
-  		if (!!profile.mins) {
+  		if (!!profile && !!profile.mins) {
 	  		mins = profile.mins[curr_year].year || 0;
 	  	}
 
