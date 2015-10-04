@@ -118,6 +118,7 @@ function currentPosition(instrumentid) {
   	}
 
 	filter["name"] = {$exists: true};
+	filter["$where"] = "this.name.length > 1";
 
 	var mins = 0;
 	var prefix = "";
@@ -221,6 +222,7 @@ Template.exerciseresultband.helpers({
 	  	}
 
 	  	filter["name"] = {$exists: true};
+	  	filter["$where"] = "this.name.length > 1";
 
 	  	if (instrumentid != "") {
 	  		filter["instrument." + instrumentid] = {$exists: true};
