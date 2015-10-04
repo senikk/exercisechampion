@@ -117,7 +117,8 @@ function currentPosition(instrumentid) {
   	  	filter = {group: profile.group};
   	}
 
-  	filter["$where"] = "this.groupname.length > 1";
+	filter["name"] = {$exists: true};
+
 	var mins = 0;
 	var prefix = "";
 	var minsobj = null;
@@ -219,8 +220,7 @@ Template.exerciseresultband.helpers({
 	  		instrumentid = instrument._id;
 	  	}
 
-	  	filter["groupname"] = {$exists: true};
-		filter["$where"] = "this.groupname.length > 1";
+	  	filter["name"] = {$exists: true};
 
 	  	if (instrumentid != "") {
 	  		filter["instrument." + instrumentid] = {$exists: true};
