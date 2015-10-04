@@ -20,8 +20,18 @@ Router.route('/admin/remove/group/:group', function () {
 	Router.go("/");
 });
 
-Router.route('/stamnes', function () {
-	this.render('admin');
+Router.route('/admin', function () {
+	try {
+		var user = Meteor.user();
+		var email = user.emails[0].address;
+		if (email == "terje@senikk.com" || email == "hegeae@gmail.com") {
+			this.render('admin');
+		} else {
+			this.redirect('/');
+		}
+	} catch(e) {
+		this.next();
+	}
 });
 
 Router.route('/profile', function () {

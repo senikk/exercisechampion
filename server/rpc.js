@@ -18,9 +18,12 @@ function makepoints(logid) {
 	inc["mins." + curr_year + ".year"] = mins;
 	inc["mins." + curr_year + ".week." + curr_week] = mins;
 	inc["mins." + curr_year + ".month." + curr_month] = mins;
-	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".year"] = mins;
-	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".week." + curr_week] = mins;
-	inc["instrument." + log.instrumentid + ".mins." + curr_year + ".month." + curr_month] = mins;
+
+	if(log.instrumentid != "") {
+		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".year"] = mins;
+		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".week." + curr_week] = mins;
+		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".month." + curr_month] = mins;		
+	}
 
 	Profile.update({owner: user}, {$inc: inc});
 
@@ -35,21 +38,23 @@ function makepoints(logid) {
 	Log.update({_id: log._id}, {$set: {group: profile.group, groupmins: mins, groupcontesters: contesters}});
 
 	// instrument points
-	inc = {};
-	mins = log.mins;
-	inc["mins." + curr_year + ".year"] = mins;
-	inc["mins." + curr_year + ".week." + curr_week] = mins;
-	inc["mins." + curr_year + ".month." + curr_month] = mins;
+	if (log.instrumentid != "") {
+		inc = {};
+		mins = log.mins;
+		inc["mins." + curr_year + ".year"] = mins;
+		inc["mins." + curr_year + ".week." + curr_week] = mins;
+		inc["mins." + curr_year + ".month." + curr_month] = mins;
 
-	Instrument.update({_id: log.instrumentid}, {$inc: inc});
-	Log.update({_id: log._id}, {$set: {instrumentmins: mins}});	
+		Instrument.update({_id: log.instrumentid}, {$inc: inc});
+		Log.update({_id: log._id}, {$set: {instrumentmins: mins}});			
+	}
 }
 
 Meteor.methods({
 	addinstrument: function (instrument) {
 		if (instrument == null) throw new Meteor.Error(400, "Instrument name empty");
 
-		instrument = instrument.trim();
+		instrument = instrument.trim().capitalize();
 		if (instrument.length == 0) throw new Meteor.Error(400, "Instrument name empty");
 
 		if (Instrument.findOne({name: { $regex : new RegExp(instrument, "i") }}) != null) throw new Meteor.Error(400, "Allready added " + instrument);
@@ -67,15 +72,23 @@ Meteor.methods({
 	removegroup: function (group) {
 		Group.remove(group);
 	},
-	addlog: function (owner, mins, body, recommended, instrument) {
+	addlog: function (owner, mins, body, recommended, instrument) {	
+		var instrumentname = "";
+		var instrumentid = "";
+		
+		if (instrument != null) {
+			instrumentname = instrument.name;
+			instrumentid = instrument._id;
+		}
+
 		var logid = Log.insert({
 			owner: owner,
 			startdate: (new Date()).getTime(),
 			body: body,
 			recommended: !!recommended,
 			mins: mins,
-			instrumentname: instrument.name,
-			instrumentid: instrument._id
+			instrumentname: instrumentname,
+			instrumentid: instrumentid
 		});
 
 		makepoints(logid);
@@ -84,13 +97,20 @@ Meteor.methods({
 		var log = Log.findOne({_id: logid});
 		var diff = log.enddate - log.startdate - (log.pausetime || 0);
 		var mins = Math.floor(diff / 1000 / 60);
+		var instrumentname = "";
+		var instrumentid = "";
+		
+		if (instrument != null) {
+			instrumentname = instrument.name;
+			instrumentid = instrument._id;
+		}
 
 		Log.update({_id: logid}, {$set: {
 			body: body,
 			recommended: !!recommended,
 			mins: mins,
-			instrumentname: instrument.name,
-			instrumentid: instrument._id
+			instrumentname: instrumentname,
+			instrumentid: instrumentid
 		}});
 
 		makepoints(logid);
@@ -98,7 +118,8 @@ Meteor.methods({
 	score: function (user) {
 		var profile = Profile.findOne({owner: user});
 		var members = Profile.find().count();
-		var groupmembers = Profile.find({group: profile.group}).count();
+		var groupmembers = 0;
+		if (profile != null) groupmembers = Profile.find({group: profile.group}).count();
 
   		var curr_year = (new Date()).getFullYear();
   		var mins = 0;

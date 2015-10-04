@@ -1,7 +1,19 @@
 <template name="instrument">
-	{{> inputAutocomplete settings=instruments class="form-control col-xs-12 input-xlarge instrument" placeholder="Instrument" value=instrument.name}}
+	<ul class="nav nav-pills nav-lg">
+		<li>
+			{{> inputAutocomplete settings=instruments class="form-control instrument col-xs-6 input-group-lg" placeholder="Exercise instrument" value=instrument.name}}
+		</li>
+		<li><button class="form-control clearsearch">Clear</button></li>
+	</ul>
+	<small>Choose an instrument from the list, if not on the list ask us at <a href="mailto:post@qrsalg.no">post@qrsalg.no</a> to add it. Its allowed to not enter any instrument if you don't wabt to compete with others playing the same instrument.</small>
 </template>
 
 <template name="instrument2">
-	{{> inputAutocomplete settings=instruments class="form-control instrument col-xs-6" placeholder="Search instrument" value=instrument.name}}
+	<ul class="nav nav-pills nav-lg">
+		<li><a href="#" class="disabled" style="color: black;">Search:</a></li>
+		<li>
+		{{> inputAutocomplete settings=instruments class="form-control instrument col-xs-6" placeholder="Search instrument" value=instrument.name}}
+		</li>
+		<li><button class="form-control clearsearch">Clear</button></li>
+	</ul>
 </template>

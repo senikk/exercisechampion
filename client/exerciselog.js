@@ -71,6 +71,7 @@ Template.exerciselogentry.events({
 Template.logexercise.helpers({
 	recommended: function () {
 		var profile = Profile.findOne({owner: Meteor.userId()});
+		if (profile == null) return;
 		return Recommended.findOne({group: profile.group}, {sort: {timestamp: 1}});		
 	}
 });
@@ -78,9 +79,10 @@ Template.logexercise.helpers({
 Template.logexercise.events({
 	"click .addlog": function (event, template) {
 		var body = template.find(".body").value || "";
+		var inst = template.find(".instrument").value || "";
 		var mins = parseInt(template.find(".mins").value) | 0;
 		var owner = Meteor.userId();
-		var instrument = Session.get("instrument");
+		var instrument = Instrument.findOne({name: inst});
 
 		if (body.length == 0) {
 			setAlertInfo("You need to enter what exercises you did");
@@ -89,6 +91,11 @@ Template.logexercise.events({
 
 		if (mins <= 0) {
 			setAlertInfo("You need to enter minutes you practised");
+			return;
+		}
+
+		if (inst != "" && instrument == null) {
+			setAlertInfo("You need to choose an instrument from available instruments when searching");
 			return;
 		}
 

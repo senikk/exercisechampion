@@ -4,6 +4,7 @@ Template.bandinfo.helpers({
 			return Group.findOne(Session.get("group"));
 		} else {
 			var profile = Profile.findOne({owner: Meteor.userId()});
+			if (profile == null) return;
 			return Group.findOne(profile.group);
 		}
 	}
@@ -109,6 +110,13 @@ function currentPosition(instrumentid) {
   	var filter = {};
 	var profile = Profile.findOne({owner: Meteor.userId()});
 
+  	if (ActiveRoute.path(new RegExp('/result/group/\w*')))
+  	{
+  		filter = {group: Session.get("group")};
+  	} else if (ActiveRoute.path('/result/group')) {
+  	  	filter = {group: profile.group};
+  	}
+
   	filter["$where"] = "this.groupname.length > 1";
 	var mins = 0;
 	var prefix = "";
@@ -124,29 +132,29 @@ function currentPosition(instrumentid) {
   	switch(periode) {
   		case "year":
 		  	try { mins = minsobj[curr_year]['year']; } catch(e) {};
-		  	gtmins[prefix + "mins." + curr_year + ".year"] = {$gt: mins};
+		  	filter[prefix + "mins." + curr_year + ".year"] = {$gt: mins};
   			break;
   		case "month":
 		  	try { mins = minsobj[curr_year]['month'][curr_month]; } catch(e) {};
-		  	gtmins[prefix + "mins." + curr_year + ".month." + curr_month] = {$gt: mins};
+		  	filter[prefix + "mins." + curr_year + ".month." + curr_month] = {$gt: mins};
   			break;
   		case "week":
   			try { mins = minsobj[curr_year]['week'][curr_week]; } catch(e) {};
-  			gtmins[prefix + "mins." + curr_year + ".week." + curr_week] = {$gt: mins};
+  			filter[prefix + "mins." + curr_year + ".week." + curr_week] = {$gt: mins};
   			break;
   		case "lastweek":
 		  	try { mins = minsobj[lastweekyear]['week'][lastweek]; } catch(e) {}
-		  	gtmins[prefix + "mins." + lastweekyear + ".week." + lastweek] = {$gt: mins};
+		  	filter[prefix + "mins." + lastweekyear + ".week." + lastweek] = {$gt: mins};
   			break;
   		case "lastmonth":
 		  	try { mins = minsobj[lastmonthyear]['month'][lastmonth]; } catch(e) {}
-		  	gtmins[prefix + "mins." + lastmonthyear + ".month." + lastmonth] = {$gt: mins};
+		  	filter[prefix + "mins." + lastmonthyear + ".month." + lastmonth] = {$gt: mins};
   			break;
   	}
 
   	sort["timestamp"] = -1;
-
-	return Profile.find(gtmins).count()+1;
+ 
+	return Profile.find(filter).count()+1;
 }
 
 Template.exerciseresultband.events({
@@ -156,6 +164,11 @@ Template.exerciseresultband.events({
 });
 
 Template.exerciseresultband.helpers({
+	instrumentname: function () {
+		var instrument = Session.get("instrument2");
+		if (instrument != null) return instrument.name;
+		return "";
+	},
 	instruments: function () {
 		var profile = Profile.findOne({owner: Meteor.userId()});
 		var instruments = [];
@@ -168,7 +181,7 @@ Template.exerciseresultband.helpers({
 		return instruments;
 	},	
 	resultyearband: function () {
-	  	var limit = 2;
+	  	var limit = 20;
 	  	var curr_year = (new Date()).getFullYear();
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
@@ -196,13 +209,10 @@ Template.exerciseresultband.helpers({
 	  	} else if (ActiveRoute.path('/result/group')) {
 		  	var profile = Profile.findOne({owner: Meteor.userId()});
 		  	if (profile) { filter = {group: profile.group}; }
-	  	} else if (ActiveRoute.path('/result/instrument')) {
+	  	} else if (ActiveRoute.path(new RegExp('/result/instrument*'))) {
 	  		var instrument = Session.get("instrument2");
 	  		if (instrument == null) {
-	  			instrument = Session.get("instrument");
-	  			if (instrument == null) return [];
-
-	  			Session.set("instrument2", instrument);
+	  			return [];
 	  		}
 
 	  		prefix = "instrument." + instrument._id + ".";

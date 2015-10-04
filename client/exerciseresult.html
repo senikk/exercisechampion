@@ -19,13 +19,7 @@
 	  {{/if}}	  
 	  {{#if isActivePath regex='/result/instrument*'}}
 	  <div class="panel-heading">
-		<ul class="nav nav-pills">
-			<li><a href="#" class="disabled" style="color: black;">Search:</a></li>
-			<li>
-			 	{{> instrument2}}
-	 		</li>
-	 		<li><button class="form-control clearsearch">Clear</button></li>
-		</ul>
+		{{> instrument2}}
 		{{#if instruments}}
 		<ul class="nav nav-pills">
 			<li><a href="#" class="disabled" style="color: black;">Your instruments:</a></li>
@@ -60,7 +54,11 @@
 	  	</table>
 	  </div>
 	  <div class="panel-footer align-right">
-	    <h3 class="panel-title">Top 20 this {{> periodeselector}}</h3>
+	    <h3 class="panel-title">Top 20 this {{> periodeselector}}
+	    {{#if isActivePath regex='/result/instrument*'}}
+	    	{{instrument instrumentname}}
+	    {{/if}}
+	    </h3>
 	  </div>
 	</div>
 </template>

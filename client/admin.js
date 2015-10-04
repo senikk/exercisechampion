@@ -1,3 +1,9 @@
+Template.admin.helpers({
+	instruments: function () {
+		return Instrument.find();
+	}
+});
+
 Template.admin.events({
 	"change .instrument": function (event, template) {
 		var instrument = template.find(".instrument").value;

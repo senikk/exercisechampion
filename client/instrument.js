@@ -20,6 +20,10 @@ Template.instrument.helpers({
 Template.instrument.events({
   "autocompleteselect input": function (event, template, instrument) {
     Session.set("instrument", instrument);
+  },
+  "click .clearsearch": function (event, template) {
+    template.find(".instrument").value = "";
+    //Session.set("instrument", null);
   }
 });
 
@@ -45,5 +49,10 @@ Template.instrument2.helpers({
 Template.instrument2.events({
   "autocompleteselect input": function (event, template, instrument) {
     Session.set("instrument2", instrument);
+  },
+  "click .clearsearch": function (event, template) {
+    template.find(".instrument").value = "";
+    Session.set("instrument2", null);
+    Router.go("/result/instrument");
   }
 });

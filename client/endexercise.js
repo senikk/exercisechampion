@@ -11,11 +11,17 @@ Template.endexercise.helpers({
 Template.endexercise.events({
 	"click .addlog": function (event, template) {
 		var log = exercisingVar.get();
-		var body = template.find(".body").value;
+		var body = template.find(".body").value || "";
+		var inst = template.find(".instrument").value || "";
 		var recommended = false;
 		var rec = template.find(".recommended");
 		if (rec) { recommended = rec.value; }
-		var instrument = Session.get("instrument");
+		var instrument = Instrument.findOne({name: inst});
+
+		if (inst != "" && instrument == null) {
+			setAlertInfo("You need to choose an instrument from available instruments when searching");
+			return;
+		}
 
 		Meteor.call("endlog", log, body, recommended, instrument);
 

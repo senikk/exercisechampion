@@ -3,6 +3,9 @@
 	  <div class="panel-body">
 	  	<label>Add instrument</label><br/>
 	  	{{> instrument}}
+	  	{{#each instruments}}
+	  		<span class="badge">{{name}}</span>
+	  	{{/each}}
 	  </div>
 	  <div class="panel-footer">
 	    <h3 class="panel-title">Exercise Champion Administation Panel</h3>
