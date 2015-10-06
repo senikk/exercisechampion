@@ -48,7 +48,11 @@ Template.exerciselogentry.helpers({
 	},
 	bodyoredit: function () {
 		return this.body || this.edit;
+	},
+	allowedit: function () {
+		return (this.owner == Meteor.userId()) && this.edit;
 	}
+
 });
 
 Template.exerciselogentry.events({
