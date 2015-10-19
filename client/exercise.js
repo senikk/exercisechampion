@@ -20,6 +20,7 @@ Tracker.autorun(function(){
   Meteor.subscribe("stat");
   Meteor.subscribe("recommended");
   Meteor.subscribe("instrument");
+  Meteor.subscribe("useremail");
 
 /* Get scores */
   if(Meteor.userId()){

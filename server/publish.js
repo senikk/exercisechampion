@@ -43,3 +43,7 @@ Meteor.publish("recommended", function () {
 Meteor.publish("instrument", function () {
   return Instrument.find();
 });
+
+Meteor.publish("useremail", function () {
+  return Meteor.users.find({}, {fields: {'emails': 1}});
+});

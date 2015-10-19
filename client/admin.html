@@ -1,4 +1,9 @@
 <template name="admin">
+	{{> admininstrument}}
+	{{> adminemails}}
+</template>
+
+<template name="admininstrument">
 	<div class="panel panel-success">
 	  <div class="panel-body">
 	  	<label>Add instrument</label><br/>
@@ -9,6 +14,21 @@
 	  </div>
 	  <div class="panel-footer">
 	    <h3 class="panel-title">Exercise Champion Administation Panel</h3>
+	  </div>
+	</div>
+</template>
+
+<template name="adminemails">
+	<div class="panel panel-success">
+	  <div class="panel-body">
+	  	<table>
+	  	{{#each users}}
+	  		<tr><td><b>{{name}}</b></td><td><a href="mailto:{{email}}">{{email}}</a></td><td>{{groupname}}</td></tr>
+	  	{{/each}}
+	  	</table>
+	  </div>
+	  <div class="panel-footer">
+	    <h3 class="panel-title">Email list</h3>
 	  </div>
 	</div>
 </template>
