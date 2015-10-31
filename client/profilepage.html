@@ -1,0 +1,36 @@
+<template name="profilepage">
+	{{#with profile}}
+	<div class="panel panel-info">
+	  <div class="panel-body">
+	  	<h4><i class="fa fa-user"></i> About {{name}}</h4>
+
+	  	{{#with year}}
+	  		{{> yearentry}}
+	  	{{/with}}
+
+	  	{{#each weeks}}
+			{{> weekentry}}
+		{{/each}}
+
+		{{#if instruments}}
+			<ul class="nav">
+				{{#each instruments}}
+				<li><a href="/result/instrument/{{_id}}"><i class="fa fa-tag"></i>
+		 {{name}}</a></li>
+				{{/each}}
+			</ul>
+		{{/if}}
+	  </div>
+	</div>
+	{{/with}}	
+
+	{{#each log}}
+		{{> exerciselogentry}}
+	{{/each}}
+</template>
+
+<template name="yearentry">
+  	<div class="well alert-success">
+  		Year {{year}} <span class="pull-right">{{minsastime mins}}</span>
+  	</div>
+</template>

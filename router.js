@@ -56,6 +56,11 @@ Router.route('/comments/log/:id', function () {
 	this.render('comments');
 });
 
+Router.route('/profile/page/:profileid', function () {
+	Session.set("profilepage", this.params.profileid);
+	this.render('profilepage');
+});
+
 Router.route('/result', function () {
 	if (Session.get("resultwho") == "champion") {
 		Router.go("/result/champion");

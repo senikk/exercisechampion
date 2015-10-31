@@ -93,10 +93,7 @@ Meteor.methods({
 
 		makepoints(logid);
 	},
-	endlog: function (logid, body, recommended, instrument) {
-		var log = Log.findOne({_id: logid});
-		var diff = log.enddate - log.startdate - (log.pausetime || 0);
-		var mins = Math.floor(diff / 1000 / 60);
+	endlog: function (logid, mins, body, recommended, instrument) {
 		var instrumentname = "";
 		var instrumentid = "";
 		
