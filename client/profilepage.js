@@ -18,7 +18,7 @@ Template.profilepage.helpers({
 	},
 	'weeks': function () {
 		var curr_year = (new Date()).getFullYear();
-		var weeks = Profile.findOne({owner: Meteor.userId()}).mins[curr_year].week;
+		var weeks = Profile.findOne({owner: Session.get("profilepage")}).mins[curr_year].week;
 
 		var result = [];
 		Object.keys(weeks).sort().reverse().slice(0,2).forEach(function(key) {
