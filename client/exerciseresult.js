@@ -183,7 +183,7 @@ Template.exerciseresultband.helpers({
 		return instruments;
 	},	
 	resultyearband: function () {
-	  	var limit = 20;
+		var limit = 50;
 	  	var curr_year = (new Date()).getFullYear();
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
@@ -290,7 +290,7 @@ Template.exerciseresultband.helpers({
 
 	  	sort["timestamp"] = -1;
 
-	  	return resultListMap(Group.find({name: {$exists: true}, $where: "this.name.length > 1"}, {sort: sort, limit: 20}));
+	  	return resultListMap(Group.find({name: {$exists: true}, $where: "this.name.length > 1"}, {sort: sort, limit: 50}));
 	},
 	periode: function () {
 		return Session.get("periode");

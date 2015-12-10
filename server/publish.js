@@ -21,7 +21,11 @@ Meteor.publish("profile", function () {
 });
 
 Meteor.publish("log", function () {
-  return Log.find();
+  return Log.find({}, {limit: 100, sort: {'startdate': -1}});
+});
+
+Meteor.publish("log-current-user", function () {
+  return Log.find({owner: this.userId}, {limit: 100, sort: {'startdate': -1}});
 });
 
 Meteor.publish("comment", function () {

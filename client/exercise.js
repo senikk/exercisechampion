@@ -15,6 +15,7 @@ Tracker.autorun(function(){
   	Session.set("loading", false);
   });
   Meteor.subscribe("log");
+  Meteor.subscribe("log-current-user");
   Meteor.subscribe("comment");
   Meteor.subscribe("group");
   Meteor.subscribe("stat");

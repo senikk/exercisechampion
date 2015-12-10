@@ -93,21 +93,28 @@ Meteor.methods({
 
 		makepoints(logid);
 	},
-	endlog: function (logid, mins, body, recommended, instrument) {
+	endlog: function (logid, mins, body, recommended, instrument, localtime) {
 		var instrumentname = "";
-		var instrumentid = "";
-		
+		var instrumentid = "";		
+	
 		if (instrument != null) {
 			instrumentname = instrument.name;
 			instrumentid = instrument._id;
 		}
+
+		var log = Log.findOne({_id: logid});
+		var diff = localtime - (new Date()).getTime();
+		var starttime = log.startdate - diff;
+		var endtime = log.enddate - diff;
 
 		Log.update({_id: logid}, {$set: {
 			body: body,
 			recommended: !!recommended,
 			mins: mins,
 			instrumentname: instrumentname,
-			instrumentid: instrumentid
+			instrumentid: instrumentid,
+			startdate: starttime,
+			enddate: endtime
 		}});
 
 		makepoints(logid);

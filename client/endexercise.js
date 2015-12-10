@@ -8,6 +8,7 @@ Template.endexercise.helpers({
 	},
 	mins: function () {
 		var log = Log.findOne(exercisingVar.get());
+		if (log == null) return 0;
 		var diff = log.enddate - log.startdate - (log.pausetime || 0);
 		var mins = Math.floor(diff / 1000 / 60);
 		return mins;
@@ -49,7 +50,7 @@ Template.endexercise.events({
 			return;
 		}
 
-		Meteor.call("endlog", log, mins, body, recommended, instrument);
+		Meteor.call("endlog", log, mins, body, recommended, instrument, (new Date()).getTime());
 
 		// update score (need to move)
 		Meteor.call("score", Meteor.userId(), function (error, score) {
