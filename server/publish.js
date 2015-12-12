@@ -49,5 +49,10 @@ Meteor.publish("instrument", function () {
 });
 
 Meteor.publish("useremail", function () {
-  return Meteor.users.find({}, {fields: {'emails': 1}});
+  var user = Meteor.users.findOne(this.userId);
+  if (user.emails[0].address == "terje@senikk.com" || user.emails[0].address == "hegeae@gmail.com") {
+	return Meteor.users.find({}, {fields: {'emails': 1}});
+  } else {
+  	return [];
+  }
 });
