@@ -16,6 +16,10 @@
 //  	return results;
 //});
 
+Meteor.publish("profile-current-user", function () {
+  return Profile.find({owner: this.userId});
+});
+
 Meteor.publish("profile", function () {
   return Profile.find();
 });
@@ -33,7 +37,8 @@ Meteor.publish("comment", function () {
 });
 
 Meteor.publish("group", function () {
-  return Group.find();
+  var groupProfileIds = Profile.find().map(function(p) { return p.group});
+  return Group.find({_id: {$in: groupProfileIds}});
 });
 
 Meteor.publish("stat", function () {

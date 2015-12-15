@@ -98,6 +98,11 @@ Template.logexercise.events({
 			return;
 		}
 
+		if (mins > 360) {
+			setAlertInfo("You are not allowed to register more than 6 hours in one manually registration.")
+			return;
+		}
+
 		if (inst != "" && instrument == null) {
 			setAlertInfo("You need to choose an instrument from available instruments when searching");
 			return;

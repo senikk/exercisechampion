@@ -11,16 +11,17 @@ exercisingVar = new StoredVar('ExerciseChampion.exercising');
 
 Tracker.autorun(function(){
 
-  Meteor.subscribe("profile", function () {
-  	Session.set("loading", false);
-  });
-  Meteor.subscribe("log");
   Meteor.subscribe("log-current-user");
-  Meteor.subscribe("comment");
+  Meteor.subscribe("profile-current-user", function () {
+  	Session.set("loading", false);  	
+  });
+  Meteor.subscribe("profile");
+  Meteor.subscribe("log");
   Meteor.subscribe("group");
   Meteor.subscribe("stat");
   Meteor.subscribe("recommended");
   Meteor.subscribe("instrument");
+  Meteor.subscribe("comment");
   Meteor.subscribe("useremail");
 
 /* Get scores */
