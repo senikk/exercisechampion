@@ -7,8 +7,9 @@ function makepoints(logid) {
 	// log points
 	var d = new Date(log.startdate);
 	var curr_year = d.getFullYear();
-	var curr_week = d.getWeekNumber();
 	var curr_month = d.getMonth(); curr_month++;
+	var curr_week = d.getWeekNumber();
+	var curr_year_week = curr_month == 1 && curr_week == 53 ? curr_year - 1 : curr_year;
 
 	// profile points
 	var profile = Profile.findOne({owner: user});
@@ -16,12 +17,12 @@ function makepoints(logid) {
 
 	var inc = {};
 	inc["mins." + curr_year + ".year"] = mins;
-	inc["mins." + curr_year + ".week." + curr_week] = mins;
+	inc["mins." + curr_year_week + ".week." + curr_week] = mins;
 	inc["mins." + curr_year + ".month." + curr_month] = mins;
 
 	if(log.instrumentid != "") {
 		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".year"] = mins;
-		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".week." + curr_week] = mins;
+		inc["instrument." + log.instrumentid + ".mins." + curr_year_week + ".week." + curr_week] = mins;
 		inc["instrument." + log.instrumentid + ".mins." + curr_year + ".month." + curr_month] = mins;		
 	}
 
@@ -31,7 +32,7 @@ function makepoints(logid) {
 	inc = {};
 	mins = Math.floor(mins / contesters);
 	inc["mins." + curr_year + ".year"] = mins;
-	inc["mins." + curr_year + ".week." + curr_week] = mins;
+	inc["mins." + curr_year_week + ".week." + curr_week] = mins;
 	inc["mins." + curr_year + ".month." + curr_month] = mins;
 
 	Group.update({_id: profile.group}, {$inc: inc});
@@ -42,7 +43,7 @@ function makepoints(logid) {
 		inc = {};
 		mins = log.mins;
 		inc["mins." + curr_year + ".year"] = mins;
-		inc["mins." + curr_year + ".week." + curr_week] = mins;
+		inc["mins." + curr_year_week + ".week." + curr_week] = mins;
 		inc["mins." + curr_year + ".month." + curr_month] = mins;
 
 		Instrument.update({_id: log.instrumentid}, {$inc: inc});
@@ -132,7 +133,7 @@ Meteor.methods({
   		var memberpercent = 100;
   		var grouppercent = 100;
 
-  		if (!!profile && !!profile.mins) {
+  		if (!!profile && !!profile.mins && !!profile.mins[curr_year]) {
 	  		mins = profile.mins[curr_year].year || 0;
 	  	}
 
@@ -160,5 +161,57 @@ Meteor.methods({
 			grouppercent: grouppercent,
 			groupposition: groupposition
 		};
+	},
+	grouptoprofile: function (groupname) {
+		var group = Group.findOne({name: new RegExp(groupname,'i')},{sort: {timestamp: 1}});
+		var profile = Profile.findOne({owner: Meteor.userId()});
+		var groupid = "";
+
+		// existing group
+		if (!!group) {
+			groupid = group._id;
+			groupname = group.name;
+		} else {
+			groupid = Group.insert({
+				owner: Meteor.userId(),
+				timestamp: (new Date()).getTime(),
+				name: groupname
+			});
+		}
+
+		// update profile
+		if (!!profile) {
+			Profile.update({_id: profile._id}, {$set: {
+				groupname: groupname,
+				group: groupid
+			}});
+		} else {
+			Profile.insert({
+				owner: Meteor.userId(),
+				timestamp: (new Date()).getTime(),
+				groupname: groupname,
+				group: groupid
+			});
+		}
+	},
+	fixit: function () {
+		console.log("fixit profile");
+
+		var profiles = Profile.find({'mins.2016.week.2': {$exists: 1}}).fetch();
+		var groups = Group.find({'mins.2016.week.2': {$exists: 1}}).fetch();
+
+		console.log("profiles");
+		for(var i in profiles) {
+			var mins = profiles[i]['mins']['2016']['week']['2'];
+			console.log(profiles[i]._id + " = " + mins);
+			Profile.update({_id: profiles[i]._id}, {$inc: {'mins.2016.week.1': mins}, $unset: {'mins.2016.week.2': ''}});
+		}
+
+		console.log("groups");
+		for(var i in groups) {
+			var mins = groups[i]['mins']['2016']['week']['2'];
+			console.log(groups[i]._id + " = " + mins);
+			Group.update({_id: groups[i]._id}, {$inc: {'mins.2016.week.1': mins}, $unset: {'mins.2016.week.2': ''}});
+		}
 	}
 });

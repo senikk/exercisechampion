@@ -30,15 +30,8 @@ Template.profile.events({
 		ChangeProfile({groupname: group.name.trim(), group: group._id});
 	},
 	"change .groupname": function (event, template) {
-		var groupname = template.find(".groupname").value;
-		groupname = groupname.trim();
-		var group = Group.insert({
-			owner: Meteor.userId(),
-			timestamp: (new Date()).getTime(),
-			name: groupname
-		});
-
-		ChangeProfile({groupname: groupname, group: group});
+		var groupname = template.find(".groupname").value;	
+		Meteor.call("grouptoprofile", groupname.trim());
 
 		// update score (need to move)
 		Meteor.call("score", Meteor.userId(), function (error, score) {

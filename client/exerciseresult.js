@@ -21,17 +21,21 @@ function resultListMap(results, instrumentid) {
   	var curr_year = (new Date()).getFullYear();
 	var curr_month = (new Date()).getMonth() + 1;
 	var curr_week = (new Date()).getWeekNumber();
+	var curr_year_week = curr_month == 1 && curr_week == 53 ? curr_year - 1 : curr_year;
+
+	var lastyear = curr_year - 1;
 	var lastmonth = curr_month - 1;
 	var lastweek = curr_week - 1;
-	var lastweekyear = curr_year;
+	var lastweekyear = curr_year_week;
 	var lastmonthyear = curr_year;
+
 	if (curr_month == 1) {
 		lastmonthyear = curr_year - 1;
 		lastmonth = 12;
 	}
-	if (curr_week == 0) { 
-	  	lastweek = 52;
-	  	lastweekyear = curr_year - 1;
+	if (curr_week == 1) { 
+  		lastweek = new Date("12.31." + (curr_year - 1)).getWeekNumber();
+  	  	lastweekyear = curr_year - 1;
 	}
 	
 	return results.map(function(result, index) {
@@ -41,19 +45,22 @@ function resultListMap(results, instrumentid) {
 			if (!!result.instrument && !!result.instrument[instrumentid]) {
 			  	switch(periode) {
 			  		case "year":
-			    		result.result = result.instrument[instrumentid].mins[curr_year].year || 0;
+			    		try { result.result = result.instrument[instrumentid].mins[curr_year].year || 0; } catch(e) { result.result = 0; };
+			  			break;
+			  		case "lastyear":
+			    		try { result.result = result.instrument[instrumentid].mins[lastyear].year || 0; } catch(e) { result.result = 0; };
 			  			break;
 			  		case "month":
-			    		result.result = result.instrument[instrumentid].mins[curr_year].month[curr_month] || 0;
+			    		try { result.result = result.instrument[instrumentid].mins[curr_year].month[curr_month] || 0; } catch(e) { result.result = 0; };
 			  			break;
 			  		case "week":
-			    		result.result = result.instrument[instrumentid].mins[curr_year].week[curr_week] || 0;
+			    		try { result.result = result.instrument[instrumentid].mins[curr_year_week].week[curr_week] || 0; } catch(e) { result.result = 0; };
 			  			break;
 				  	case "lastweek":
-		  				result.result = result.instrument[instrumentid].mins[lastweekyear].week[lastweek] || 0;
+		  				try { result.result = result.instrument[instrumentid].mins[lastweekyear].week[lastweek] || 0; } catch(e) { result.result = 0; };
 		  				break;
 		  			case "lastmonth":
-						result.result = result.instrument[instrumentid].mins[lastmonthyear].month[lastmonth] || 0;
+						try { result.result = result.instrument[instrumentid].mins[lastmonthyear].month[lastmonth] || 0; } catch(e) { result.result = 0; };
 		  				break;
 			  	}
 			} else {
@@ -63,19 +70,22 @@ function resultListMap(results, instrumentid) {
 			if (!!result.mins) {
 			  	switch(periode) {
 			  		case "year":
-			    		result.result = result.mins[curr_year].year || 0;
+			    		try { result.result = result.mins[curr_year].year || 0; } catch(e) { result.result = 0; };
+			  			break;
+			  		case "lastyear":
+			    		try { result.result = result.mins[lastyear].year || 0; } catch(e) { result.result = 0; };
 			  			break;
 			  		case "month":
-			    		result.result = result.mins[curr_year].month[curr_month] || 0;
+			  			try { result.result = result.mins[curr_year].month[curr_month] || 0; } catch(e) { result.result = 0; };
 			  			break;
 			  		case "week":
-			    		result.result = result.mins[curr_year].week[curr_week] || 0;
+			  			try { result.result = result.mins[curr_year_week].week[curr_week] || 0; } catch(e) { result.result = 0; };
 			  			break;
 				  	case "lastweek":
-		  				result.result = result.mins[lastweekyear].week[lastweek] || 0;
+		  				try { result.result = result.mins[lastweekyear].week[lastweek] || 0; } catch(e) { result.result = 0; };
 		  				break;
 		  			case "lastmonth":
-						result.result = result.mins[lastmonthyear].month[lastmonth] || 0;
+						try { result.result = result.mins[lastmonthyear].month[lastmonth] || 0; } catch(e) { result.result = 0; };
 		  				break;
 			  	}
 			} else {
@@ -92,16 +102,19 @@ function currentPosition(instrumentid) {
   	var curr_year = (new Date()).getFullYear();
   	var curr_month = (new Date()).getMonth() + 1;
   	var curr_week = (new Date()).getWeekNumber();
+  	var curr_year_week = curr_month == 1 && curr_week == 53 ? curr_year - 1 : curr_year;
+
+  	var lastyear = curr_year - 1;
   	var lastweek = curr_week - 1;
   	var lastmonth = curr_month - 1;
-  	var lastweekyear = curr_year;
+  	var lastweekyear = curr_year_week;
   	var lastmonthyear = curr_year;
   	if (curr_month == 1) {
   		lastmonthyear = curr_year - 1;
   		lastmonth = 12;
   	}
-  	if (curr_week == 0) { 
-  		lastweek = 52;
+  	if (curr_week == 1) { 
+  		lastweek = new Date("12.31." + (curr_year - 1)).getWeekNumber();
   		lastweekyear = curr_year - 1;
   	}
 
@@ -136,13 +149,17 @@ function currentPosition(instrumentid) {
 		  	try { mins = minsobj[curr_year]['year']; } catch(e) {};
 		  	filter[prefix + "mins." + curr_year + ".year"] = {$gt: mins};
   			break;
+  		case "lastyear":
+		  	try { mins = minsobj[curr_year - 1]['year']; } catch(e) {};
+		  	filter[prefix + "mins." + lastyear + ".year"] = {$gt: mins};
+  			break;
   		case "month":
 		  	try { mins = minsobj[curr_year]['month'][curr_month]; } catch(e) {};
 		  	filter[prefix + "mins." + curr_year + ".month." + curr_month] = {$gt: mins};
   			break;
   		case "week":
-  			try { mins = minsobj[curr_year]['week'][curr_week]; } catch(e) {};
-  			filter[prefix + "mins." + curr_year + ".week." + curr_week] = {$gt: mins};
+  			try { mins = minsobj[curr_year_week]['week'][curr_week]; } catch(e) {};
+  			filter[prefix + "mins." + curr_year_week + ".week." + curr_week] = {$gt: mins};
   			break;
   		case "lastweek":
 		  	try { mins = minsobj[lastweekyear]['week'][lastweek]; } catch(e) {}
@@ -187,16 +204,19 @@ Template.exerciseresultband.helpers({
 	  	var curr_year = (new Date()).getFullYear();
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
+	  	var curr_year_week = curr_month == 1 && curr_week == 53 ? curr_year - 1 : curr_year;
+
+	  	var lastyear = curr_year - 1;
 	  	var lastweek = curr_week - 1;
 	  	var lastmonth = curr_month - 1;
-	  	var lastweekyear = curr_year;
+	  	var lastweekyear = curr_year_week;
 	  	var lastmonthyear = curr_year;
 	  	if (curr_month == 1) {
 	  		lastmonthyear = curr_year - 1;
 	  		lastmonth = 12;
 	  	}
-	  	if (curr_week == 0) { 
-	  		lastweek = 52;
+	  	if (curr_week == 1) { 
+	  		lastweek = new Date("12.31." + (curr_year - 1)).getWeekNumber();
 	  		lastweekyear = curr_year - 1;
 	  	}
 	  	var periode = Session.get("periode"); 
@@ -232,11 +252,14 @@ Template.exerciseresultband.helpers({
 	  		case "year":
 			  	sort[prefix + "mins." + curr_year + ".year"] = -1;
 	  			break;
+	  		case "lastyear":
+			  	sort[prefix + "mins." + lastyear + ".year"] = -1;
+	  			break;
 	  		case "month":
 	  		  	sort[prefix + "mins." + curr_year + ".month." + curr_month] = -1;
 	  			break;
 	  		case "week":
-	  			sort[prefix + "mins." + curr_year + ".week." + curr_week] = -1;
+	  			sort[prefix + "mins." + curr_year_week + ".week." + curr_week] = -1;
 	  			break;
 	  		case "lastweek":
 	  			sort[prefix + "mins." + lastweekyear + ".week." + lastweek] = -1;
@@ -264,10 +287,18 @@ Template.exerciseresultband.helpers({
 	  	var curr_year = (new Date()).getFullYear();
 	  	var curr_month = (new Date()).getMonth() + 1;
 	  	var curr_week = (new Date()).getWeekNumber();
+	  	var curr_year_week = curr_month == 1 && curr_week == 53 ? curr_year - 1 : curr_year;
+
+	  	var lastyear = curr_year - 1;
 	  	var lastweek = curr_week - 1;
-	  	var lastweekyear = curr_year;
-	  	if (curr_week == 0) { 
-	  		lastweek = 52;
+	  	var lastweekyear = curr_year_week;
+	  	var lastmonthyear = curr_year;
+	  	if (curr_month == 1) {
+	  		lastmonthyear = curr_year - 1;
+	  		lastmonth = 12;
+	  	}
+	  	if (curr_week == 1) { 
+	  		lastweek = new Date("12.31." + (curr_year - 1)).getWeekNumber();
 	  		lastweekyear = curr_year - 1;
 	  	}
 	  	var periode = Session.get("periode"); 
@@ -277,14 +308,20 @@ Template.exerciseresultband.helpers({
 	  		case "year":
 			  	sort["mins." + curr_year + ".year"] = -1;
 	  			break;
+	  		case "lastyear":
+			  	sort["mins." + lastyear + ".year"] = -1;
+	  			break;
 	  		case "month":
 	  		  	sort["mins." + curr_year + ".month." + curr_month] = -1;
 	  			break;
 	  		case "week":
-	  			sort["mins." + curr_year + ".week." + curr_week] = -1;
+	  			sort["mins." + curr_year_week + ".week." + curr_week] = -1;
 	  			break;
 	  		case "lastweek":
 	  			sort["mins." + lastweekyear + ".week." + lastweek] = -1;
+	  			break;
+	  		case "lastmonth":
+	  			sort["mins." + lastmonthyear + ".month." + lastmonth] = -1;
 	  			break;
 	  	}
 
@@ -308,14 +345,21 @@ Template.periodeselector.helpers({
 	},
 	lastweek: function () {
 		var week = (new Date()).getWeekNumber();
-		if (week == 1) week = 52;
-		return week - 1;
+		if (week == 1) {
+			week = new Date("12.31." + ((new Date()).getFullYear() - 1)).getWeekNumber();
+		} else {
+			week--;
+		}
+		return week;
 	}
 })
 
 Template.periodeselector.events({
 	"click .periode-year": function () {
 		Session.set("periode", "year");
+	},
+	"click .periode-lastyear": function () {
+		Session.set("periode", "lastyear");
 	},
 	"click .periode-month": function () {
 		Session.set("periode", "month");

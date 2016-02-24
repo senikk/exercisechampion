@@ -125,7 +125,7 @@ Template.exercisestat.helpers({
 		var sort = {};
 
 		var mins = 0;
-		if (!!profile.mins) { mins = profile.mins[year].year; }
+		if (!!profile.mins && !!profile.mins[year]) { mins = profile.mins[year].year; }
 
 		filter["mins." + year + ".year"] = {$gt: mins};
 		sort["mins." + year + ".year"] = -1;
@@ -136,14 +136,18 @@ Template.exercisestat.helpers({
 		return nextprofile.mins[year].year - mins;
 	},
 	"lastweekmins": function () {
-		var year = (new Date()).getFullYear();
 		var lastweek = (new Date()).setDate((new Date()).getDate() - 7);
+		var year = (new Date(lastweek)).getFullYear();
 		var week = (new Date(lastweek)).getWeekNumber();
 		var profile = Profile.findOne({owner: Meteor.userId()});
 
-		if (!profile.mins) return 0;
+		if (!profile.mins || !profile.mins[year]) return 0;
 
-		return profile.mins[year].week[week] || 0;
+		try { 
+			return profile.mins[year].week[week] || 0;
+		} catch(e) {
+			return 0;
+		}
 	},
 	"profile": function () {
 		return Profile.findOne({owner: Meteor.userId()});
@@ -159,7 +163,7 @@ Template.exercisestat.helpers({
 		var profile = Profile.findOne({owner: Meteor.userId()});
 		var year = (new Date()).getFullYear();
 
-		if (!profile.mins) return 0;
+		if (!profile.mins || !profile.mins[year]) return 0;
 
 		return profile.mins[year].year || 0;
 	},
@@ -168,9 +172,13 @@ Template.exercisestat.helpers({
 		var week = (new Date()).getWeekNumber();
 		var profile = Profile.findOne({owner: Meteor.userId()});
 
-		if (!profile.mins) return 0;
+		if (!profile.mins || !profile.mins[year]) return 0;
 
-		return profile.mins[year].week[week] || 0;
+		try {
+			return profile.mins[year].week[week] || 0;	
+		} catch(e) {
+			return 0;
+		}
 	},
 	"score": function () {
 		return Session.get("score");	

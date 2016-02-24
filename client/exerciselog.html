@@ -24,6 +24,14 @@
 			{{#each weeks}}
 				{{> weekentry}}
 			{{/each}}
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					Year {{lastyear}} week summary
+				</div>
+			</div>
+			{{#each weekslastyear}}
+				{{> weekentry}}
+			{{/each}}			
 		{{else}}
 			{{#if isActivePath '/log/you'}}
 				{{#unless exercising}}

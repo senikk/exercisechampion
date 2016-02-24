@@ -20,6 +20,11 @@ Router.route('/admin/remove/group/:group', function () {
 	Router.go("/");
 });
 
+Router.route('/admin/fixit', function () {
+	Meteor.call("fixit");
+	Router.go("/");
+});
+
 Router.route('/admin', function () {
 	try {
 		var user = Meteor.user();

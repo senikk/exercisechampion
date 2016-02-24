@@ -22,17 +22,41 @@ Template.exerciselog.helpers({
 	},
 	weeks: function () {
 		var curr_year = (new Date()).getFullYear();
-		var weeks = Profile.findOne({owner: Meteor.userId()}).mins[curr_year].week;
 
-		var result = [];
-		Object.keys(weeks).sort().reverse().forEach(function(key) {
-  			result.push({week: key, mins: weeks[key]});
-		});
+		try {
+			var weeks = Profile.findOne({owner: Meteor.userId()}).mins[curr_year].week;
 
-		return result;
+			var result = [];
+			Object.keys(weeks).sort().reverse().forEach(function(key) {
+	  			result.push({week: key, mins: weeks[key]});
+			});
+
+			return result;
+		} catch(e) {
+
+		}		
+	},
+	weekslastyear: function () {
+		var curr_year = (new Date()).getFullYear() - 1;
+
+		try {
+			var weeks = Profile.findOne({owner: Meteor.userId()}).mins[curr_year].week;
+
+			var result = [];
+			Object.keys(weeks).sort().reverse().forEach(function(key) {
+	  			result.push({week: key, mins: weeks[key]});
+			});
+
+			return result;
+		} catch(e) {
+
+		}		
 	},
 	year: function () {
 		return (new Date()).getFullYear();
+	},
+	lastyear: function () {
+		return (new Date()).getFullYear() - 1;
 	},
 	exercising: function () {
 		return !!exercisingVar.get();
