@@ -1,7 +1,8 @@
 Router.configure({
-  layoutTemplate: 'applayout'
+  layoutTemplate: 'moved'
 });
 
+/*
 Router.route('/', function () {
 	this.render('exercise');
 });
@@ -103,3 +104,4 @@ Router.route('/result/bands', function () {
 Router.route('/endexercise', function () {
 	this.render('endexercise');
 });
+*/
